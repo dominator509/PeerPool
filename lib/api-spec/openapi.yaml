@@ -3,20 +3,35 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: PeerPool decentralized multi-party escrow and dispute-resolution protocol API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: escrows
+    description: Escrow management
+  - name: manifests
+    description: Manifest registry
+  - name: participants
+    description: Escrow participants
+  - name: votes
+    description: Outcome voting
+  - name: disputes
+    description: Dispute resolution
+  - name: claims
+    description: Settlement claims
+  - name: activity
+    description: Activity feed
+  - name: stats
+    description: Protocol statistics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +39,988 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /escrows:
+    get:
+      operationId: listEscrows
+      tags: [escrows]
+      summary: List all escrows
+      parameters:
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [pending, funded, active, disputed, settled, closed]
+        - name: chain
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of escrows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EscrowList"
+    post:
+      operationId: createEscrow
+      tags: [escrows]
+      summary: Create a new escrow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEscrowBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Escrow"
+
+  /escrows/summary:
+    get:
+      operationId: getEscrowSummary
+      tags: [escrows]
+      summary: Dashboard summary of escrows
+      responses:
+        "200":
+          description: Summary stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EscrowSummary"
+
+  /escrows/{id}:
+    get:
+      operationId: getEscrow
+      tags: [escrows]
+      summary: Get escrow details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Escrow detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Escrow"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateEscrow
+      tags: [escrows]
+      summary: Update escrow state
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEscrowBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Escrow"
+
+  /escrows/{id}/participants:
+    get:
+      operationId: listParticipants
+      tags: [participants]
+      summary: List participants in an escrow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Participants
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParticipantList"
+    post:
+      operationId: addParticipant
+      tags: [participants]
+      summary: Add a participant to an escrow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddParticipantBody"
+      responses:
+        "201":
+          description: Participant added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Participant"
+
+  /escrows/{id}/votes:
+    get:
+      operationId: listVotes
+      tags: [votes]
+      summary: List votes for an escrow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Votes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteList"
+    post:
+      operationId: submitVote
+      tags: [votes]
+      summary: Submit a vote on an outcome
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitVoteBody"
+      responses:
+        "201":
+          description: Vote submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote"
+
+  /escrows/{id}/claims:
+    get:
+      operationId: listClaims
+      tags: [claims]
+      summary: List claims for an escrow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Claims
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimList"
+    post:
+      operationId: createClaim
+      tags: [claims]
+      summary: Create a settlement claim
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClaimBody"
+      responses:
+        "201":
+          description: Claim created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Claim"
+
+  /escrows/{id}/claims/{claimId}/submit:
+    post:
+      operationId: submitClaim
+      tags: [claims]
+      summary: Submit a claim with merkle proof
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitClaimBody"
+      responses:
+        "200":
+          description: Claim submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Claim"
+
+  /manifests:
+    get:
+      operationId: listManifests
+      tags: [manifests]
+      summary: List all manifests
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Manifests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManifestList"
+    post:
+      operationId: createManifest
+      tags: [manifests]
+      summary: Register a new manifest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateManifestBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Manifest"
+
+  /manifests/{id}:
+    get:
+      operationId: getManifest
+      tags: [manifests]
+      summary: Get manifest details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Manifest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Manifest"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /disputes:
+    get:
+      operationId: listDisputes
+      tags: [disputes]
+      summary: List all disputes
+      parameters:
+        - name: state
+          in: query
+          schema:
+            type: string
+            enum: [open, escalated, resolved, closed]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Disputes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DisputeList"
+    post:
+      operationId: createDispute
+      tags: [disputes]
+      summary: Open a dispute for an escrow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDisputeBody"
+      responses:
+        "201":
+          description: Dispute opened
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dispute"
+
+  /disputes/summary:
+    get:
+      operationId: getDisputeSummary
+      tags: [disputes]
+      summary: Dispute resolution stats
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DisputeSummary"
+
+  /disputes/{id}:
+    get:
+      operationId: getDispute
+      tags: [disputes]
+      summary: Get dispute details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Dispute
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dispute"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /disputes/{id}/resolve:
+    post:
+      operationId: resolveDispute
+      tags: [disputes]
+      summary: Resolve a dispute with a verdict
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResolveDisputeBody"
+      responses:
+        "200":
+          description: Resolved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dispute"
+
+  /activity:
+    get:
+      operationId: listActivity
+      tags: [activity]
+      summary: Recent protocol activity feed
+      parameters:
+        - name: escrow_id
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        "200":
+          description: Activity events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityList"
+
+  /stats:
+    get:
+      operationId: getProtocolStats
+      tags: [stats]
+      summary: Global protocol statistics
+      responses:
+        "200":
+          description: Protocol stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProtocolStats"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    EscrowState:
+      type: string
+      enum: [pending, funded, active, disputed, settled, closed]
+
+    DisputeState:
+      type: string
+      enum: [open, escalated, resolved, closed]
+
+    ClaimState:
+      type: string
+      enum: [pending, submitted, executed, rejected]
+
+    ParticipantRole:
+      type: string
+      enum: [depositor, beneficiary, arbitrator, observer]
+
+    Escrow:
+      type: object
+      required: [id, title, state, chain, token, totalAmount, creatorAddress, manifestId, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        state:
+          $ref: "#/components/schemas/EscrowState"
+        chain:
+          type: string
+        contractAddress:
+          type: string
+        token:
+          type: string
+        totalAmount:
+          type: string
+        fundedAmount:
+          type: string
+        creatorAddress:
+          type: string
+        manifestId:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        fundedAt:
+          type: string
+          format: date-time
+        participantCount:
+          type: integer
+        voteCount:
+          type: integer
+
+    EscrowList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Escrow"
+        total:
+          type: integer
+
+    EscrowSummary:
+      type: object
+      required: [total, byState, totalValueLocked, recentCount]
+      properties:
+        total:
+          type: integer
+        byState:
+          type: object
+          additionalProperties:
+            type: integer
+        totalValueLocked:
+          type: string
+        recentCount:
+          type: integer
+        avgParticipants:
+          type: number
+
+    CreateEscrowBody:
+      type: object
+      required: [title, chain, token, totalAmount, creatorAddress, manifestId]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        chain:
+          type: string
+        token:
+          type: string
+        totalAmount:
+          type: string
+        creatorAddress:
+          type: string
+        manifestId:
+          type: string
+        deadline:
+          type: string
+          format: date-time
+
+    UpdateEscrowBody:
+      type: object
+      properties:
+        state:
+          $ref: "#/components/schemas/EscrowState"
+        contractAddress:
+          type: string
+        fundedAmount:
+          type: string
+        fundedAt:
+          type: string
+          format: date-time
+
+    Participant:
+      type: object
+      required: [id, escrowId, address, role, joinedAt]
+      properties:
+        id:
+          type: string
+        escrowId:
+          type: string
+        address:
+          type: string
+        role:
+          $ref: "#/components/schemas/ParticipantRole"
+        fundedAmount:
+          type: string
+        joinedAt:
+          type: string
+          format: date-time
+
+    ParticipantList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Participant"
+
+    AddParticipantBody:
+      type: object
+      required: [address, role]
+      properties:
+        address:
+          type: string
+        role:
+          $ref: "#/components/schemas/ParticipantRole"
+        fundedAmount:
+          type: string
+
+    Vote:
+      type: object
+      required: [id, escrowId, voterAddress, outcomeIndex, votedAt]
+      properties:
+        id:
+          type: string
+        escrowId:
+          type: string
+        voterAddress:
+          type: string
+        outcomeIndex:
+          type: integer
+        outcomeLabel:
+          type: string
+        weight:
+          type: string
+        signature:
+          type: string
+        votedAt:
+          type: string
+          format: date-time
+
+    VoteList:
+      type: object
+      required: [items, tally]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Vote"
+        tally:
+          type: array
+          items:
+            $ref: "#/components/schemas/OutcomeTally"
+
+    OutcomeTally:
+      type: object
+      required: [outcomeIndex, outcomeLabel, voteCount, totalWeight]
+      properties:
+        outcomeIndex:
+          type: integer
+        outcomeLabel:
+          type: string
+        voteCount:
+          type: integer
+        totalWeight:
+          type: string
+
+    SubmitVoteBody:
+      type: object
+      required: [voterAddress, outcomeIndex]
+      properties:
+        voterAddress:
+          type: string
+        outcomeIndex:
+          type: integer
+        weight:
+          type: string
+        signature:
+          type: string
+
+    Manifest:
+      type: object
+      required: [id, title, conditions, outcomes, createdBy, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        conditions:
+          type: array
+          items:
+            type: string
+        outcomes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManifestOutcome"
+        createdBy:
+          type: string
+        ipfsHash:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        escrowCount:
+          type: integer
+
+    ManifestOutcome:
+      type: object
+      required: [index, label]
+      properties:
+        index:
+          type: integer
+        label:
+          type: string
+        description:
+          type: string
+        distributionBps:
+          type: integer
+
+    ManifestList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Manifest"
+        total:
+          type: integer
+
+    CreateManifestBody:
+      type: object
+      required: [title, conditions, outcomes, createdBy]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        conditions:
+          type: array
+          items:
+            type: string
+        outcomes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ManifestOutcome"
+        createdBy:
+          type: string
+        ipfsHash:
+          type: string
+
+    Dispute:
+      type: object
+      required: [id, escrowId, disputerAddress, reason, state, bondAmount, createdAt]
+      properties:
+        id:
+          type: string
+        escrowId:
+          type: string
+        disputerAddress:
+          type: string
+        reason:
+          type: string
+        state:
+          $ref: "#/components/schemas/DisputeState"
+        bondAmount:
+          type: string
+        klerosDisputeId:
+          type: string
+        aiVerdictSummary:
+          type: string
+        resolvedOutcomeIndex:
+          type: integer
+        resolvedBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+
+    DisputeList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dispute"
+        total:
+          type: integer
+
+    DisputeSummary:
+      type: object
+      required: [total, byState, avgResolutionDays, klerosEscalationRate]
+      properties:
+        total:
+          type: integer
+        byState:
+          type: object
+          additionalProperties:
+            type: integer
+        avgResolutionDays:
+          type: number
+        klerosEscalationRate:
+          type: number
+        totalBondsLocked:
+          type: string
+
+    CreateDisputeBody:
+      type: object
+      required: [escrowId, disputerAddress, reason, bondAmount]
+      properties:
+        escrowId:
+          type: string
+        disputerAddress:
+          type: string
+        reason:
+          type: string
+        bondAmount:
+          type: string
+
+    ResolveDisputeBody:
+      type: object
+      required: [resolvedOutcomeIndex, resolvedBy]
+      properties:
+        resolvedOutcomeIndex:
+          type: integer
+        resolvedBy:
+          type: string
+        aiVerdictSummary:
+          type: string
+        klerosDisputeId:
+          type: string
+
+    Claim:
+      type: object
+      required: [id, escrowId, claimantAddress, amount, state, createdAt]
+      properties:
+        id:
+          type: string
+        escrowId:
+          type: string
+        claimantAddress:
+          type: string
+        amount:
+          type: string
+        merkleRoot:
+          type: string
+        merkleProof:
+          type: array
+          items:
+            type: string
+        leafHash:
+          type: string
+        state:
+          $ref: "#/components/schemas/ClaimState"
+        createdAt:
+          type: string
+          format: date-time
+        submittedAt:
+          type: string
+          format: date-time
+        executedAt:
+          type: string
+          format: date-time
+
+    ClaimList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Claim"
+
+    CreateClaimBody:
+      type: object
+      required: [claimantAddress, amount]
+      properties:
+        claimantAddress:
+          type: string
+        amount:
+          type: string
+        merkleRoot:
+          type: string
+        leafHash:
+          type: string
+
+    SubmitClaimBody:
+      type: object
+      required: [merkleProof]
+      properties:
+        merkleProof:
+          type: array
+          items:
+            type: string
+
+    ActivityEvent:
+      type: object
+      required: [id, type, escrowId, actorAddress, timestamp]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [escrow_created, escrow_funded, participant_added, vote_submitted, dispute_opened, dispute_resolved, claim_created, claim_executed, manifest_registered]
+        escrowId:
+          type: string
+        actorAddress:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+
+    ActivityList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityEvent"
+
+    ProtocolStats:
+      type: object
+      required: [totalEscrows, totalValueLocked, totalDisputes, totalClaims, totalManifests, activeChains]
+      properties:
+        totalEscrows:
+          type: integer
+        totalValueLocked:
+          type: string
+        totalDisputes:
+          type: integer
+        totalClaims:
+          type: integer
+        totalManifests:
+          type: integer
+        activeChains:
+          type: array
+          items:
+            type: string
+        disputeResolutionRate:
+          type: number
+        avgEscrowDurationDays:
+          type: number
