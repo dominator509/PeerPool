@@ -56,7 +56,7 @@ export function CreateEscrow() {
   const selectedManifest = watch("manifestId");
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <Link href="/escrows">
         <a className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 mb-4">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Escrows
@@ -65,7 +65,7 @@ export function CreateEscrow() {
       <PageHeader title="Create Escrow" description="Initialize a new multi-party escrow" />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="create-escrow-form">
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-5 space-y-4">
+        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4 sm:p-5 space-y-4">
           <div>
             <Label className="text-xs text-slate-400 mb-1.5">Title *</Label>
             <Input
@@ -87,7 +87,7 @@ export function CreateEscrow() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label className="text-xs text-slate-400 mb-1.5">Chain *</Label>
               <Select value={selectedChain} onValueChange={(v) => setValue("chain", v)}>
@@ -115,7 +115,7 @@ export function CreateEscrow() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label className="text-xs text-slate-400 mb-1.5">Total Amount (smallest unit) *</Label>
               <Input
@@ -163,16 +163,16 @@ export function CreateEscrow() {
           </p>
         )}
 
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col sm:flex-row justify-end gap-2">
           <Link href="/escrows">
-            <Button type="button" variant="outline" className="border-slate-700 text-slate-400">
+            <Button type="button" variant="outline" className="border-slate-700 text-slate-400 w-full sm:w-auto">
               Cancel
             </Button>
           </Link>
           <Button
             type="submit"
             disabled={isPending}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white w-full sm:w-auto"
             data-testid="submit-btn"
           >
             {isPending ? "Creating..." : "Create Escrow"}

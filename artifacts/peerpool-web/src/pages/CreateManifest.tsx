@@ -90,7 +90,7 @@ export function CreateManifest() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <Link href="/manifests">
         <a className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 mb-4">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Manifests
@@ -99,7 +99,7 @@ export function CreateManifest() {
       <PageHeader title="Register Manifest" description="Define outcome conditions for escrows" />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="create-manifest-form">
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-5 space-y-4">
+        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4 sm:p-5 space-y-4">
           <div>
             <Label className="text-xs text-slate-400 mb-1.5">Title *</Label>
             <Input
@@ -121,7 +121,7 @@ export function CreateManifest() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label className="text-xs text-slate-400 mb-1.5">Created By Address *</Label>
               <Input
@@ -144,9 +144,8 @@ export function CreateManifest() {
           </div>
         </div>
 
-        {/* Conditions */}
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
-          <div className="flex items-center justify-between mb-3">
+        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3 gap-2">
             <p className="text-sm font-medium text-slate-300">Conditions</p>
             <Button type="button" size="sm" variant="outline" className="border-slate-700 text-slate-400 h-7 text-xs gap-1" onClick={addCondition} data-testid="add-condition-btn">
               <Plus className="w-3 h-3" /> Add
@@ -172,9 +171,8 @@ export function CreateManifest() {
           </div>
         </div>
 
-        {/* Outcomes */}
-        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-5">
-          <div className="flex items-center justify-between mb-3">
+        <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3 gap-2">
             <p className="text-sm font-medium text-slate-300">Outcomes</p>
             <Button type="button" size="sm" variant="outline" className="border-slate-700 text-slate-400 h-7 text-xs gap-1" onClick={addOutcome} data-testid="add-outcome-btn">
               <Plus className="w-3 h-3" /> Add
@@ -182,7 +180,7 @@ export function CreateManifest() {
           </div>
           <div className="space-y-3">
             {outcomes.map((outcome, i) => (
-              <div key={i} className="grid grid-cols-[auto_1fr_1fr_80px] gap-2 items-start">
+              <div key={i} className="grid grid-cols-1 sm:grid-cols-[auto_1fr_1fr_80px] gap-2 items-start">
                 <div className="w-7 h-9 flex items-center justify-center text-xs text-slate-500 font-mono">{i}</div>
                 <Input
                   value={outcome.label}
@@ -225,11 +223,11 @@ export function CreateManifest() {
           </p>
         )}
 
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-col sm:flex-row justify-end gap-2">
           <Link href="/manifests">
-            <Button type="button" variant="outline" className="border-slate-700 text-slate-400">Cancel</Button>
+            <Button type="button" variant="outline" className="border-slate-700 text-slate-400 w-full sm:w-auto">Cancel</Button>
           </Link>
-          <Button type="submit" disabled={isPending} className="bg-indigo-600 hover:bg-indigo-500 text-white" data-testid="submit-btn">
+          <Button type="submit" disabled={isPending} className="bg-indigo-600 hover:bg-indigo-500 text-white w-full sm:w-auto" data-testid="submit-btn">
             {isPending ? "Registering..." : "Register Manifest"}
           </Button>
         </div>

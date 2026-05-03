@@ -62,7 +62,7 @@ export function Claims() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto">
       <PageHeader
         title="Claims"
         description="Submit and track settlement claims with Merkle proofs"
@@ -70,7 +70,7 @@ export function Claims() {
           selectedEscrow ? (
             <Button
               size="sm"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5 w-full sm:w-auto"
               onClick={() => setShowCreate((v) => !v)}
               data-testid="create-claim-btn"
             >
@@ -81,11 +81,10 @@ export function Claims() {
         }
       />
 
-      {/* Escrow selector */}
       <div className="mb-5">
         <Label className="text-xs text-slate-400 mb-1.5">Select Escrow</Label>
         <Select value={selectedEscrow} onValueChange={setSelectedEscrow}>
-          <SelectTrigger className="w-80 bg-slate-900 border-slate-700 text-slate-200" data-testid="escrow-select">
+          <SelectTrigger className="w-full sm:w-80 bg-slate-900 border-slate-700 text-slate-200" data-testid="escrow-select">
             <SelectValue placeholder="Choose an escrow..." />
           </SelectTrigger>
           <SelectContent className="bg-slate-900 border-slate-700">
@@ -98,11 +97,10 @@ export function Claims() {
         </Select>
       </div>
 
-      {/* Create claim form */}
       {showCreate && selectedEscrow && (
         <div className="rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-4 mb-4">
           <p className="text-sm font-medium text-slate-300 mb-3">Create Claim</p>
-          <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
             <div>
               <Label className="text-xs text-slate-400 mb-1.5">Claimant Address</Label>
               <Input
@@ -124,7 +122,7 @@ export function Claims() {
               />
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button size="sm" onClick={handleCreate} disabled={creating} className="bg-indigo-600 hover:bg-indigo-500 text-white" data-testid="submit-create-btn">
               {creating ? "Creating..." : "Create Claim"}
             </Button>
@@ -135,7 +133,6 @@ export function Claims() {
         </div>
       )}
 
-      {/* Submit claim (Merkle proof) */}
       {submitClaimId && selectedEscrow && (
         <div className="rounded-lg border border-violet-800/60 bg-violet-950/20 px-4 py-4 mb-4">
           <p className="text-sm font-medium text-violet-300 mb-3">Submit Merkle Proof</p>
@@ -149,18 +146,17 @@ export function Claims() {
               data-testid="proof-input"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button size="sm" onClick={handleSubmit} disabled={submitting} className="bg-violet-600 hover:bg-violet-500 text-white" data-testid="submit-proof-btn">
               {submitting ? "Submitting..." : "Submit Proof"}
             </Button>
-            <Button size="sm" variant="outline" className="border-slate-700 text-slate-400" onClick={() => setSubmitClaimId("")}>
+            <Button size="sm" variant="outline" className="border-slate-700 text-slate-400" onClick={() => setSubmitClaimId("") }>
               Cancel
             </Button>
           </div>
         </div>
       )}
 
-      {/* Claims table */}
       {!selectedEscrow ? (
         <EmptyState icon={Coins} title="Select an escrow" description="Choose an escrow above to view its claims" />
       ) : isLoading ? (
@@ -172,7 +168,7 @@ export function Claims() {
       ) : !claims?.items?.length ? (
         <EmptyState icon={Coins} title="No claims yet" description="Claims submitted for this escrow will appear here" />
       ) : (
-        <div className="rounded-lg border border-slate-800 overflow-hidden">
+        <div className="rounded-lg border border-slate-800 overflow-hidden hidden md:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-800 bg-slate-900/80">
@@ -217,6 +213,33 @@ export function Claims() {
           </table>
         </div>
       )}
+
+      <div className="md:hidden space-y-3">
+        {selectedEscrow && !isLoading && claims?.items?.map((c) => (
+          <div key={c.id} className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <AddressBadge address={c.claimantAddress} />
+              <StateBadge state={c.state} type="claim" />
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+              <span>{formatAmount(c.amount)}</span>
+              <span>·</span>
+              <span>{formatDate(c.createdAt)}</span>
+            </div>
+            {c.state === "pending" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-3 border-violet-700 text-violet-400 h-8 text-xs"
+                onClick={() => setSubmitClaimId(c.id)}
+                data-testid="submit-proof-btn-mobile"
+              >
+                Submit Proof
+              </Button>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -30,13 +30,13 @@ export function EscrowList() {
   const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <PageHeader
         title="Escrows"
         description={`${data?.total ?? 0} escrow${(data?.total ?? 0) !== 1 ? "s" : ""} in the protocol`}
         action={
           <Link href="/escrows/new">
-            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5" data-testid="create-escrow-btn">
+            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5 w-full sm:w-auto" data-testid="create-escrow-btn">
               <Plus className="w-3.5 h-3.5" />
               New Escrow
             </Button>
@@ -44,9 +44,9 @@ export function EscrowList() {
         }
       />
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <Select value={state} onValueChange={(v) => { setState(v === "all" ? "" : v); setPage(0); }}>
-          <SelectTrigger className="w-36 h-8 text-xs bg-slate-900 border-slate-700" data-testid="state-filter">
+          <SelectTrigger className="w-full sm:w-36 h-8 text-xs bg-slate-900 border-slate-700" data-testid="state-filter">
             <SelectValue placeholder="All states" />
           </SelectTrigger>
           <SelectContent className="bg-slate-900 border-slate-700">
@@ -58,7 +58,7 @@ export function EscrowList() {
         </Select>
 
         <Select value={chain} onValueChange={(v) => { setChain(v === "all" ? "" : v); setPage(0); }}>
-          <SelectTrigger className="w-36 h-8 text-xs bg-slate-900 border-slate-700" data-testid="chain-filter">
+          <SelectTrigger className="w-full sm:w-36 h-8 text-xs bg-slate-900 border-slate-700" data-testid="chain-filter">
             <SelectValue placeholder="All chains" />
           </SelectTrigger>
           <SelectContent className="bg-slate-900 border-slate-700">
@@ -70,7 +70,7 @@ export function EscrowList() {
         </Select>
       </div>
 
-      <div className="rounded-lg border border-slate-800 overflow-hidden">
+      <div className="rounded-lg border border-slate-800 overflow-hidden hidden md:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-800 bg-slate-900/80">
@@ -139,6 +139,36 @@ export function EscrowList() {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-24 bg-slate-800 rounded-lg animate-pulse" />)
+        ) : !data?.items?.length ? (
+          <EmptyState icon={LockKeyhole} title="No escrows found" description="Try changing the filters or create a new escrow" />
+        ) : (
+          data.items.map((e) => (
+            <Link key={e.id} href={`/escrows/${e.id}`} className="block rounded-lg border border-slate-800 bg-slate-900/40 p-4" data-testid="escrow-row-mobile">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-slate-200 truncate">{e.title}</p>
+                  {e.description && <p className="text-xs text-slate-500 mt-1 line-clamp-2">{e.description}</p>}
+                </div>
+                <StateBadge state={e.state} />
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                <span>{e.chain}</span>
+                <span>·</span>
+                <span>{e.participantCount} participants</span>
+                <span>·</span>
+                <span>{formatDate(e.createdAt)}</span>
+              </div>
+              <div className="mt-2">
+                <AddressBadge address={e.creatorAddress} />
+              </div>
+            </Link>
+          ))
+        )}
       </div>
 
       {totalPages > 1 && (

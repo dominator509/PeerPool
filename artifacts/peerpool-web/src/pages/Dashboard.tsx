@@ -29,12 +29,12 @@ export function Dashboard() {
   const { mutate: triggerSync, isPending: syncing } = useTriggerSync();
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <PageHeader
         title="Dashboard"
         description="Protocol overview and recent activity"
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -47,7 +47,7 @@ export function Dashboard() {
               {syncing || indexerStatus?.running ? "Syncing…" : "Sync Chains"}
             </Button>
             <Link href="/escrows/new">
-              <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5" data-testid="create-escrow-btn">
+              <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5 w-full sm:w-auto" data-testid="create-escrow-btn">
                 <Plus className="w-3.5 h-3.5" />
                 New Escrow
               </Button>
@@ -56,22 +56,21 @@ export function Dashboard() {
         }
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard label="Total Escrows" value={statsLoading ? "—" : (stats?.totalEscrows ?? 0)} sub={`${escrowSummary?.byState?.active ?? 0} active`} accent />
         <StatCard label="Total Value Locked" value={statsLoading ? "—" : `$${formatAmount(stats?.totalValueLocked ?? "0", 0)}`} sub="across all chains" />
         <StatCard label="Disputes" value={statsLoading ? "—" : (stats?.totalDisputes ?? 0)} sub={`${Math.round((disputeSummary?.klerosEscalationRate ?? 0) * 100)}% escalated`} />
         <StatCard label="Manifests" value={statsLoading ? "—" : (stats?.totalManifests ?? 0)} sub={`${(chains?.count ?? 0)} supported chains`} />
       </div>
 
-      {/* Chain Status Row */}
-      <div className="mb-5 rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mb-5 rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3 overflow-x-auto">
+        <div className="flex items-center justify-between mb-2 gap-2">
           <div className="flex items-center gap-2">
             <Link2 className="w-3.5 h-3.5 text-slate-500" />
             <span className="text-[11px] text-slate-500 uppercase tracking-wider">Supported Chains</span>
           </div>
           {indexerStatus && (
-            <span className="text-[10px] text-slate-600">
+            <span className="text-[10px] text-slate-600 whitespace-nowrap">
               {indexerStatus.running ? (
                 <span className="text-amber-400">Indexer running…</span>
               ) : indexerStatus.lastRun ? (
@@ -82,7 +81,7 @@ export function Dashboard() {
             </span>
           )}
         </div>
-        <div className="flex gap-1.5 flex-wrap">
+        <div className="flex gap-1.5 flex-wrap min-w-max sm:min-w-0">
           {(chains?.chains ?? stats?.activeChains ?? []).map((chain) => {
             const isActive = (stats?.activeChains ?? []).includes(chain);
             return (
@@ -103,7 +102,7 @@ export function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-3 rounded-lg border border-slate-800 bg-slate-900/40">
+        <div className="lg:col-span-3 rounded-lg border border-slate-800 bg-slate-900/40 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <LockKeyhole className="w-4 h-4 text-slate-500" />
@@ -121,18 +120,18 @@ export function Dashboard() {
                 <Link
                   key={e.id}
                   href={`/escrows/${e.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-slate-800/30 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-3 hover:bg-slate-800/30 transition-colors gap-2"
                   data-testid="escrow-row"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-slate-200 truncate">{e.title}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       <span className="text-[11px] text-slate-500">{e.chain}</span>
                       <span className="text-[11px] text-slate-600">·</span>
                       <span className="text-[11px] text-slate-500">{e.participantCount} participants</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <StateBadge state={e.state} />
                   </div>
                 </Link>
@@ -141,7 +140,7 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="lg:col-span-2 rounded-lg border border-slate-800 bg-slate-900/40">
+        <div className="lg:col-span-2 rounded-lg border border-slate-800 bg-slate-900/40 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-slate-500" />
@@ -176,9 +175,9 @@ export function Dashboard() {
       </div>
 
       {escrowSummary && (
-        <div className="mt-4 rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3">
+        <div className="mt-4 rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3 overflow-x-auto">
           <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-3">Escrow State Distribution</p>
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3 flex-wrap min-w-max sm:min-w-0">
             {Object.entries(escrowSummary.byState ?? {}).map(([state, count]) => (
               <div key={state} className="flex items-center gap-1.5">
                 <StateBadge state={state} />

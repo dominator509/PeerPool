@@ -29,11 +29,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { address, isConnecting, connect, disconnect } = useWallet();
 
   return (
-    <div className="flex h-screen bg-[#0a0e1a] text-slate-200 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 flex flex-col border-r border-slate-800 bg-[#0d1121]">
-        {/* Logo */}
-        <div className="px-5 py-5 border-b border-slate-800">
+    <div className="flex min-h-dvh bg-[#0a0e1a] text-slate-200 flex-col lg:flex-row">
+      <aside className="w-full lg:w-56 flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 bg-[#0d1121]">
+        <div className="px-4 sm:px-5 py-4 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center flex-shrink-0">
               <LockKeyhole className="w-4 h-4 text-white" />
@@ -45,34 +43,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-2 sm:px-3 py-3 sm:py-4 flex lg:block gap-1 overflow-x-auto lg:overflow-x-visible whitespace-nowrap lg:whitespace-normal">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-            const active =
-              href === "/"
-                ? location === "/"
-                : location.startsWith(href);
+            const active = href === "/" ? location === "/" : location.startsWith(href);
             return (
               <Link key={href} href={href}>
                 <div
                   className={cn(
-                    "flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors cursor-pointer",
-                    active
-                      ? "bg-indigo-600/20 text-indigo-300 font-medium"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                    "flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors cursor-pointer shrink-0 lg:w-auto",
+                    active ? "bg-indigo-600/20 text-indigo-300 font-medium" : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
                   )}
                   data-testid={`nav-${label.toLowerCase()}`}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span>{label}</span>
-                  {active && <ChevronRight className="w-3 h-3 ml-auto opacity-60" />}
+                  {active && <ChevronRight className="w-3 h-3 ml-auto opacity-60 hidden lg:block" />}
                 </div>
               </Link>
             );
           })}
         </nav>
 
-        {/* Wallet Connect */}
         <div className="px-3 py-3 border-t border-slate-800">
           {address ? (
             <div className="space-y-1.5">
@@ -104,14 +95,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-5 py-3 border-t border-slate-800">
+        <div className="hidden lg:block px-5 py-3 border-t border-slate-800">
           <p className="text-[10px] text-slate-600">EVM · Multi-chain · Non-custodial</p>
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto min-w-0">
         {children}
       </main>
     </div>
