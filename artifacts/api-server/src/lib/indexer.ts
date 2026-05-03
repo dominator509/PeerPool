@@ -140,7 +140,9 @@ export async function runIndexer(): Promise<{ syncedContracts: number; eventsPro
 
     for (const escrow of withContracts) {
       if (!escrow.contractAddress) continue;
-      const fromBlock = BigInt(0);
+      const client = getChainClient(escrow.chain);
+      const latestBlock = client ? await client.getBlockNumber() : 0n;
+      const fromBlock = latestBlock > 10_000n ? latestBlock - 10_000n : 0n;
       const events = await indexEscrowContract(
         escrow.chain,
         escrow.contractAddress as `0x${string}`,
