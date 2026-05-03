@@ -10,6 +10,7 @@ import {
   ResolveDisputeBody,
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -90,7 +91,7 @@ router.get("/disputes", async (req, res) => {
   }
 });
 
-router.post("/disputes", async (req, res) => {
+router.post("/disputes", requireAuth, async (req, res) => {
   try {
     const body = CreateDisputeBody.safeParse(req.body);
     if (!body.success) {
@@ -159,7 +160,7 @@ router.get("/disputes/:id", async (req, res) => {
   }
 });
 
-router.post("/disputes/:id/resolve", async (req, res) => {
+router.post("/disputes/:id/resolve", requireAuth, async (req, res) => {
   try {
     const params = ResolveDisputeParams.safeParse(req.params);
     const body = ResolveDisputeBody.safeParse(req.body);

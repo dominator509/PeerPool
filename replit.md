@@ -159,6 +159,20 @@ Git submodule deps in `contracts/lib/`: `forge-std`, `openzeppelin-contracts`, `
 - `artifacts/peerpool-web/src/lib/wallet.ts` — EIP-712 wallet connect using window.ethereum
 - `artifacts/peerpool-web/src/lib/zodResolver.ts` — custom Zod v4-compatible form resolver (avoids @hookform/resolvers version mismatch)
 
+## Production Hardening (completed)
+
+- **Auth enforced on all write routes**: `requireAuth` middleware (reads `Authorization: Bearer <token>` → `getSession`) applied to every POST/PATCH on escrows, disputes, claims, votes, participants, manifests, settlement, kleros escalate, admin/sync, and AI review.
+- **Frontend sends auth token automatically**: `setAuthTokenGetter(() => wallet.sessionToken)` wired in `WalletProvider` via `lib/api-client-react`'s `setAuthTokenGetter` export — no manual header passing needed in components.
+- **Rate limiting**: global 200/min, auth endpoints 10/min, AI review 5/min (`express-rate-limit`).
+- **CORS restricted**: allows `*.replit.dev`, `*.repl.co`, and `REPLIT_DOMAINS` — not wildcard.
+- **Body size cap**: `express.json({ limit: "512kb" })`.
+- **Indexer started at boot**: `startIndexerSchedule()` called in `app.ts` (60s polling interval).
+- **Indexer bug fixed**: `where(eq(contractAddress, contractAddress))` tautology → `where(isNotNull(contractAddress))`.
+- **React error boundary**: wraps entire app tree + inner router — catches unhandled render errors with a recoverable error screen.
+- **Settlement trigger**: "Generate Settlement" button added to `EscrowDetail` for `active`/`disputed` escrows that have claims; displays Merkle root on success.
+- **DB indices**: added to all high-query columns — `escrows(state, chain, creatorAddress, manifestId)`, `disputes(escrowId, state)`, `claims(escrowId, state)`, `activity(escrowId, type, timestamp)`, `votes(escrowId, voterAddress)`, `participants(escrowId, address)`.
+- **Duplicate import removed**: dead `createContext as reactCreateContext` import from `wallet.ts` line 149 deleted.
+
 ## Notes
 
 - `lib/api-zod/src/index.ts` exports only from `./generated/api` (no duplicate type re-exports)
@@ -168,3 +182,4 @@ Git submodule deps in `contracts/lib/`: `forge-std`, `openzeppelin-contracts`, `
 - Zod forms use `makeZodResolver` from `@/lib/zodResolver` instead of `@hookform/resolvers/zod` — avoids v3/v4 type incompatibility
 - Kleros adapter gracefully falls back to simulated escalation if `KLEROS_ADAPTER_<CHAIN>` env vars are not set
 - AI integration uses `AI_INTEGRATIONS_ANTHROPIC_BASE_URL` + `AI_INTEGRATIONS_ANTHROPIC_API_KEY` (Replit-provisioned)
+- `req.params["id"]` cast to `String()` in kleros, ai, and settlement route handlers to satisfy Express TS overloads

@@ -8,6 +8,7 @@ import {
   SubmitVoteBody,
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.get("/escrows/:id/votes", async (req, res) => {
   }
 });
 
-router.post("/escrows/:id/votes", async (req, res) => {
+router.post("/escrows/:id/votes", requireAuth, async (req, res) => {
   try {
     const params = SubmitVoteParams.safeParse(req.params);
     const body = SubmitVoteBody.safeParse(req.body);

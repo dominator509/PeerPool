@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { SUPPORTED_CHAINS, getChainInfo } from "../lib/chain.js";
 import { runIndexer, getIndexerStatus } from "../lib/indexer.js";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.get("/admin/indexer", async (_req, res) => {
   res.json(getIndexerStatus());
 });
 
-router.post("/admin/sync", async (req, res) => {
+router.post("/admin/sync", requireAuth, async (req, res) => {
   try {
     const result = await runIndexer();
     res.json({ ok: true, ...result });

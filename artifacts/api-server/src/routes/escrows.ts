@@ -10,6 +10,7 @@ import {
   UpdateEscrowParams,
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -83,7 +84,7 @@ router.get("/escrows", async (req, res) => {
   }
 });
 
-router.post("/escrows", async (req, res) => {
+router.post("/escrows", requireAuth, async (req, res) => {
   try {
     const body = CreateEscrowBody.safeParse(req.body);
     if (!body.success) {
@@ -137,7 +138,7 @@ router.get("/escrows/:id", async (req, res) => {
   }
 });
 
-router.patch("/escrows/:id", async (req, res) => {
+router.patch("/escrows/:id", requireAuth, async (req, res) => {
   try {
     const params = UpdateEscrowParams.safeParse(req.params);
     const body = UpdateEscrowBody.safeParse(req.body);

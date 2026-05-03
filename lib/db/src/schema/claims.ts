@@ -1,4 +1,4 @@
-import { pgTable, text, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, jsonb, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -16,7 +16,10 @@ export const claimsTable = pgTable("claims", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   submittedAt: timestamp("submitted_at"),
   executedAt: timestamp("executed_at"),
-});
+}, (table) => [
+  index("claims_escrow_id_idx").on(table.escrowId),
+  index("claims_state_idx").on(table.state),
+]);
 
 export const insertClaimSchema = createInsertSchema(claimsTable).omit({
   state: true,

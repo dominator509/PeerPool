@@ -146,8 +146,6 @@ export function useWalletState(): WalletState {
   return { address, isConnecting, isAuthenticated, sessionToken, connect, disconnect, sign };
 }
 
-import { createContext as reactCreateContext } from "react";
-
 export const WalletContext = createContext<WalletState>({
   address: null,
   isConnecting: false,

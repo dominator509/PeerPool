@@ -1,4 +1,4 @@
-import { pgTable, text, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, jsonb, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -21,7 +21,11 @@ export const activityTable = pgTable("activity", {
   actorAddress: text("actor_address").notNull(),
   data: jsonb("data").$type<Record<string, unknown>>(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
-});
+}, (table) => [
+  index("activity_escrow_id_idx").on(table.escrowId),
+  index("activity_type_idx").on(table.type),
+  index("activity_timestamp_idx").on(table.timestamp),
+]);
 
 export const insertActivitySchema = createInsertSchema(activityTable).omit({
   timestamp: true,

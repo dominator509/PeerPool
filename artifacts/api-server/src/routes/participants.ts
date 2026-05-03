@@ -8,6 +8,7 @@ import {
   ListParticipantsParams,
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router({ mergeParams: true });
 
@@ -31,7 +32,7 @@ router.get("/escrows/:id/participants", async (req, res) => {
   }
 });
 
-router.post("/escrows/:id/participants", async (req, res) => {
+router.post("/escrows/:id/participants", requireAuth, async (req, res) => {
   try {
     const params = AddParticipantParams.safeParse(req.params);
     const body = AddParticipantBody.safeParse(req.body);

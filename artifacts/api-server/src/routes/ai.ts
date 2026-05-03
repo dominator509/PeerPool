@@ -3,12 +3,13 @@ import { db } from "@workspace/db";
 import { disputesTable, escrowsTable, manifestsTable, claimsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { anthropic } from "@workspace/integrations-anthropic-ai";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
-router.post("/disputes/:id/ai-review", async (req, res) => {
+router.post("/disputes/:id/ai-review", requireAuth, async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params["id"]);
 
     const [dispute] = await db
       .select()

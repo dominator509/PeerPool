@@ -9,16 +9,23 @@ import {
   getListVotesQueryKey,
   getListClaimsQueryKey,
 } from "@workspace/api-client-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { StateBadge } from "@/components/StateBadge";
 import { AddressBadge } from "@/components/AddressBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { formatDate, formatAmount } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Vote, Coins, AlertTriangle } from "lucide-react";
+import { useWallet } from "@/lib/wallet";
+import { ArrowLeft, Users, Vote, Coins, AlertTriangle, GitBranch, Loader2 } from "lucide-react";
+
+const BASE = import.meta.env.BASE_URL ?? "/";
+const API_BASE = `${BASE}api`.replace(/\/\//g, "/");
 
 export function EscrowDetail() {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+  const { sessionToken } = useWallet();
 
   const { data: escrow, isLoading } = useGetEscrow(id!, {
     query: { enabled: !!id, queryKey: getGetEscrowQueryKey(id!) },
@@ -31,6 +38,27 @@ export function EscrowDetail() {
   });
   const { data: claims } = useListClaims(id!, {
     query: { enabled: !!id, queryKey: getListClaimsQueryKey(id!) },
+  });
+
+  const { mutate: generateSettlement, isPending: settling, data: settlementResult } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`${API_BASE}/escrows/${id}/settlement`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(err.error ?? `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: getGetEscrowQueryKey(id!) });
+      queryClient.invalidateQueries({ queryKey: getListClaimsQueryKey(id!) });
+    },
   });
 
   if (isLoading) {
@@ -49,6 +77,8 @@ export function EscrowDetail() {
       </div>
     );
   }
+
+  const canSettle = (escrow.state === "active" || escrow.state === "disputed") && (claims?.items?.length ?? 0) > 0;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -102,7 +132,7 @@ export function EscrowDetail() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         {escrow.state === "funded" && (
           <Link href={`/disputes?escrow=${id}`}>
             <Button size="sm" variant="outline" className="border-amber-700 text-amber-400 hover:bg-amber-900/20 gap-1.5" data-testid="open-dispute-btn">
@@ -119,7 +149,37 @@ export function EscrowDetail() {
             </Button>
           </Link>
         )}
+        {canSettle && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => generateSettlement()}
+            disabled={settling}
+            className="border-emerald-700 text-emerald-400 hover:bg-emerald-900/20 gap-1.5"
+            data-testid="generate-settlement-btn"
+          >
+            {settling ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                Computing…
+              </>
+            ) : (
+              <>
+                <GitBranch className="w-3.5 h-3.5" />
+                Generate Settlement
+              </>
+            )}
+          </Button>
+        )}
       </div>
+
+      {settlementResult && (
+        <div className="rounded-lg border border-emerald-800/60 bg-emerald-950/20 px-4 py-4 mb-4" data-testid="settlement-result">
+          <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-2">Settlement Root Generated</p>
+          <p className="text-xs font-mono text-emerald-300 break-all">{settlementResult.merkleRoot}</p>
+          <p className="text-xs text-slate-500 mt-1">{settlementResult.claimCount} claim{settlementResult.claimCount !== 1 ? "s" : ""} included · Escrow marked as settled</p>
+        </div>
+      )}
 
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-800 bg-slate-900/40">

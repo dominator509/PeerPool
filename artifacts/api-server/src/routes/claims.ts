@@ -10,6 +10,7 @@ import {
   SubmitClaimBody,
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -33,7 +34,7 @@ router.get("/escrows/:id/claims", async (req, res) => {
   }
 });
 
-router.post("/escrows/:id/claims", async (req, res) => {
+router.post("/escrows/:id/claims", requireAuth, async (req, res) => {
   try {
     const params = CreateClaimParams.safeParse(req.params);
     const body = CreateClaimBody.safeParse(req.body);
@@ -63,7 +64,7 @@ router.post("/escrows/:id/claims", async (req, res) => {
   }
 });
 
-router.post("/escrows/:id/claims/:claimId/submit", async (req, res) => {
+router.post("/escrows/:id/claims/:claimId/submit", requireAuth, async (req, res) => {
   try {
     const params = SubmitClaimParams.safeParse(req.params);
     const body = SubmitClaimBody.safeParse(req.body);

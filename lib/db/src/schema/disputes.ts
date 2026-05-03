@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -17,7 +17,10 @@ export const disputesTable = pgTable("disputes", {
   resolvedBy: text("resolved_by"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   resolvedAt: timestamp("resolved_at"),
-});
+}, (table) => [
+  index("disputes_escrow_id_idx").on(table.escrowId),
+  index("disputes_state_idx").on(table.state),
+]);
 
 export const insertDisputeSchema = createInsertSchema(disputesTable).omit({
   state: true,

@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -11,7 +11,10 @@ export const votesTable = pgTable("votes", {
   weight: text("weight").notNull().default("1"),
   signature: text("signature"),
   votedAt: timestamp("voted_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("votes_escrow_id_idx").on(table.escrowId),
+  index("votes_voter_idx").on(table.voterAddress),
+]);
 
 export const insertVoteSchema = createInsertSchema(votesTable).omit({
   weight: true,

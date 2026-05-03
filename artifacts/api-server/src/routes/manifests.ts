@@ -8,6 +8,7 @@ import {
   GetManifestParams,
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -37,7 +38,7 @@ router.get("/manifests", async (req, res) => {
   }
 });
 
-router.post("/manifests", async (req, res) => {
+router.post("/manifests", requireAuth, async (req, res) => {
   try {
     const body = CreateManifestBody.safeParse(req.body);
     if (!body.success) {

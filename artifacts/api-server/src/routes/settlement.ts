@@ -4,12 +4,13 @@ import { claimsTable, escrowsTable, activityTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { buildSettlementTree, verifyProof } from "../lib/merkle.js";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
-router.post("/escrows/:id/settlement", async (req, res) => {
+router.post("/escrows/:id/settlement", requireAuth, async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params["id"]);
 
     const [escrow] = await db
       .select()
@@ -82,7 +83,7 @@ router.post("/escrows/:id/settlement", async (req, res) => {
 
 router.get("/escrows/:id/settlement", async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params["id"]);
 
     const claims = await db
       .select()
@@ -117,7 +118,7 @@ router.get("/escrows/:id/settlement", async (req, res) => {
 
 router.post("/escrows/:id/settlement/verify", async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params["id"]);
     const { claimantAddress, amount, proof, merkleRoot } = req.body as {
       claimantAddress: string;
       amount: string;

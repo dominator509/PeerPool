@@ -1,7 +1,7 @@
 import { getChainClient, SUPPORTED_CHAINS } from "./chain.js";
 import { db } from "@workspace/db";
 import { escrowsTable, activityTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, isNotNull } from "drizzle-orm";
 import { PEERPOOL_ESCROW_ABI } from "./abis.js";
 import { logger } from "./logger.js";
 import { randomUUID } from "crypto";
@@ -134,7 +134,7 @@ export async function runIndexer(): Promise<{ syncedContracts: number; eventsPro
     const escrows = await db
       .select()
       .from(escrowsTable)
-      .where(eq(escrowsTable.contractAddress, escrowsTable.contractAddress));
+      .where(isNotNull(escrowsTable.contractAddress));
 
     const withContracts = escrows.filter((e) => e.contractAddress);
 

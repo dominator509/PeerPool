@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { getChainClient } from "../lib/chain.js";
 import { KLEROS_ADAPTER_ABI } from "../lib/abis.js";
 import { randomUUID } from "crypto";
+import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
 
@@ -15,9 +16,9 @@ const KLEROS_ADAPTER_ADDRESSES: Record<string, `0x${string}` | undefined> = {
   "arbitrum-sepolia": (process.env.KLEROS_ADAPTER_ARBITRUM_SEPOLIA as `0x${string}`) || undefined,
 };
 
-router.post("/disputes/:id/escalate", async (req, res) => {
+router.post("/disputes/:id/escalate", requireAuth, async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params["id"]);
 
     const [dispute] = await db
       .select()
@@ -135,7 +136,7 @@ router.post("/disputes/:id/escalate", async (req, res) => {
 
 router.get("/disputes/:id/kleros-status", async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = String(req.params["id"]);
 
     const [dispute] = await db
       .select()

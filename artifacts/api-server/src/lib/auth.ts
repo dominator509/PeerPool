@@ -1,13 +1,11 @@
 import {
-  createWalletClient,
-  custom,
   verifyMessage,
   verifyTypedData,
   type Address,
   type Hex,
 } from "viem";
-import { mainnet } from "viem/chains";
 import { randomBytes } from "crypto";
+import type { Request, Response, NextFunction } from "express";
 
 const DOMAIN_NAME = "PeerPool";
 const DOMAIN_VERSION = "1";
@@ -144,4 +142,20 @@ export function getSession(token: string): AuthSession | null {
 
 export function invalidateSession(token: string): void {
   activeSessions.delete(token);
+}
+
+export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    res.status(401).json({ error: "Authentication required" });
+    return;
+  }
+  const token = authHeader.slice(7);
+  const session = getSession(token);
+  if (!session) {
+    res.status(401).json({ error: "Invalid or expired session" });
+    return;
+  }
+  (req as Request & { authSession: AuthSession }).authSession = session;
+  next();
 }

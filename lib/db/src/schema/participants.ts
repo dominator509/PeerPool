@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -11,7 +11,10 @@ export const participantsTable = pgTable("participants", {
   role: text("role").notNull().$type<typeof participantRoleEnum[number]>(),
   fundedAmount: text("funded_amount").notNull().default("0"),
   joinedAt: timestamp("joined_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("participants_escrow_id_idx").on(table.escrowId),
+  index("participants_address_idx").on(table.address),
+]);
 
 export const insertParticipantSchema = createInsertSchema(participantsTable).omit({
   fundedAmount: true,
