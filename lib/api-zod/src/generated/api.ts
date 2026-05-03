@@ -487,6 +487,222 @@ export const ResolveDisputeResponse = zod.object({
 });
 
 /**
+ * @summary Run AI review on a dispute and generate a verdict summary
+ */
+export const RunAiDisputeReviewParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const RunAiDisputeReviewResponse = zod.object({
+  id: zod.string(),
+  aiVerdictSummary: zod.string(),
+  model: zod.string(),
+  generatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Escalate a dispute to Kleros arbitration
+ */
+export const EscalateDisputeToKlerosParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const EscalateDisputeToKlerosBody = zod.object({
+  chain: zod.string().optional(),
+  klerosDisputeId: zod.string().optional(),
+});
+
+export const EscalateDisputeToKlerosResponse = zod.object({
+  disputeId: zod.string(),
+  klerosDisputeId: zod.string(),
+  state: zod.string(),
+  chain: zod.string(),
+  simulated: zod.boolean().optional(),
+  message: zod.string().optional(),
+  adapterAddress: zod.string().optional(),
+});
+
+/**
+ * @summary Get Kleros arbitration status for a dispute
+ */
+export const GetKlerosStatusParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetKlerosStatusResponse = zod.object({
+  escalated: zod.boolean(),
+  klerosDisputeId: zod.string().optional(),
+  state: zod.string(),
+  resolvedOutcomeIndex: zod.number().optional(),
+  message: zod.string().optional(),
+  klerosCourtUrl: zod.string().optional(),
+});
+
+/**
+ * @summary Get settlement Merkle root and proofs for an escrow
+ */
+export const GetSettlementParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetSettlementResponse = zod.object({
+  escrowId: zod.string(),
+  merkleRoot: zod.string(),
+  claimCount: zod.number(),
+  leaves: zod.array(
+    zod.object({
+      claimantAddress: zod.string(),
+      amount: zod.string(),
+      leafHash: zod.string(),
+      proof: zod.array(zod.string()),
+      state: zod.string().optional(),
+    }),
+  ),
+});
+
+/**
+ * @summary Compute Merkle settlement root from all claims for an escrow
+ */
+export const ComputeSettlementParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const ComputeSettlementResponse = zod.object({
+  escrowId: zod.string(),
+  merkleRoot: zod.string(),
+  claimCount: zod.number(),
+  leaves: zod.array(
+    zod.object({
+      claimantAddress: zod.string(),
+      amount: zod.string(),
+      leafHash: zod.string(),
+      proof: zod.array(zod.string()),
+      state: zod.string().optional(),
+    }),
+  ),
+});
+
+/**
+ * @summary Verify a Merkle proof for a claim allocation
+ */
+export const VerifySettlementProofParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const VerifySettlementProofBody = zod.object({
+  claimantAddress: zod.string(),
+  amount: zod.string(),
+  proof: zod.array(zod.string()),
+  merkleRoot: zod.string(),
+});
+
+export const VerifySettlementProofResponse = zod.object({
+  valid: zod.boolean(),
+  claimantAddress: zod.string(),
+  amount: zod.string(),
+  escrowId: zod.string(),
+});
+
+/**
+ * @summary List supported chains
+ */
+export const ListChainsResponse = zod.object({
+  chains: zod.array(zod.string()),
+  count: zod.number(),
+});
+
+/**
+ * @summary Get chain info and latest block
+ */
+export const GetChainParams = zod.object({
+  name: zod.coerce.string(),
+});
+
+export const GetChainResponse = zod.object({
+  name: zod.string(),
+  chainId: zod.number(),
+  blockNumber: zod.string().optional(),
+  rpcConfigured: zod.boolean(),
+  nativeCurrency: zod.object({
+    name: zod.string(),
+    symbol: zod.string(),
+    decimals: zod.number(),
+  }),
+});
+
+/**
+ * @summary Get on-chain indexer status
+ */
+export const GetIndexerStatusResponse = zod.object({
+  running: zod.boolean(),
+  lastRun: zod.coerce.date().optional(),
+  lastError: zod.string().optional(),
+  syncedContracts: zod.number(),
+  eventsProcessed: zod.number(),
+});
+
+/**
+ * @summary Trigger on-chain event indexer run
+ */
+export const TriggerSyncResponse = zod.object({
+  ok: zod.boolean(),
+  syncedContracts: zod.number(),
+  eventsProcessed: zod.number(),
+});
+
+/**
+ * @summary Request a sign-in nonce for an address
+ */
+export const GetAuthNonceQueryParams = zod.object({
+  address: zod.coerce.string(),
+});
+
+export const GetAuthNonceResponse = zod.object({
+  nonce: zod.string(),
+  message: zod.string(),
+  address: zod.string(),
+  domain: zod.record(zod.string(), zod.unknown()).optional(),
+  types: zod.record(zod.string(), zod.unknown()).optional(),
+});
+
+/**
+ * @summary Verify a wallet signature and issue a session token
+ */
+export const VerifySignatureBody = zod.object({
+  address: zod.string(),
+  signature: zod.string(),
+  nonce: zod.string(),
+  issuedAt: zod.string().optional(),
+  method: zod.enum(["personal_sign", "eth_signTypedData_v4"]).optional(),
+});
+
+export const VerifySignatureResponse = zod.object({
+  address: zod.string(),
+  token: zod.string().optional(),
+  expiresIn: zod.number().optional(),
+  issuedAt: zod.number().optional(),
+  valid: zod.boolean().optional(),
+});
+
+/**
+ * @summary Get current session info from Bearer token
+ */
+export const GetAuthSessionResponse = zod.object({
+  address: zod.string(),
+  token: zod.string().optional(),
+  expiresIn: zod.number().optional(),
+  issuedAt: zod.number().optional(),
+  valid: zod.boolean().optional(),
+});
+
+/**
+ * @summary Invalidate the current session
+ */
+export const LogoutResponse = zod.object({
+  ok: zod.boolean(),
+});
+
+/**
  * @summary Recent protocol activity feed
  */
 export const listActivityQueryLimitDefault = 30;

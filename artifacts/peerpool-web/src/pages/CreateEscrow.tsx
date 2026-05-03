@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { z } from "zod/v4";
+import { makeZodResolver } from "@/lib/zodResolver";
 import { useCreateEscrow, useListManifests } from "@workspace/api-client-react";
 import { useLocation, Link } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
@@ -37,7 +37,7 @@ export function CreateEscrow() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({ resolver: makeZodResolver(schema) });
 
   const { mutate, isPending, error } = useCreateEscrow({
     mutation: {

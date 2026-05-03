@@ -482,6 +482,306 @@ paths:
               schema:
                 $ref: "#/components/schemas/Dispute"
 
+  /disputes/{id}/ai-review:
+    post:
+      operationId: runAiDisputeReview
+      tags: [disputes]
+      summary: Run AI review on a dispute and generate a verdict summary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: AI verdict generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiReviewResult"
+        "404":
+          description: Dispute not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /disputes/{id}/escalate:
+    post:
+      operationId: escalateDisputeToKleros
+      tags: [disputes]
+      summary: Escalate a dispute to Kleros arbitration
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EscalateDisputeBody"
+      responses:
+        "200":
+          description: Escalated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlerosEscalationResult"
+        "404":
+          description: Dispute not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /disputes/{id}/kleros-status:
+    get:
+      operationId: getKlerosStatus
+      tags: [disputes]
+      summary: Get Kleros arbitration status for a dispute
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Kleros status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KlerosStatus"
+        "404":
+          description: Dispute not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /escrows/{id}/settlement:
+    get:
+      operationId: getSettlement
+      tags: [escrows]
+      summary: Get settlement Merkle root and proofs for an escrow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Settlement data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettlementResult"
+        "404":
+          description: No settlement found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: computeSettlement
+      tags: [escrows]
+      summary: Compute Merkle settlement root from all claims for an escrow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Settlement computed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SettlementResult"
+        "404":
+          description: Escrow not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /escrows/{id}/settlement/verify:
+    post:
+      operationId: verifySettlementProof
+      tags: [escrows]
+      summary: Verify a Merkle proof for a claim allocation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyProofBody"
+      responses:
+        "200":
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyProofResult"
+
+  /chains:
+    get:
+      operationId: listChains
+      tags: [chains]
+      summary: List supported chains
+      responses:
+        "200":
+          description: Supported chains
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChainList"
+
+  /chains/{name}:
+    get:
+      operationId: getChain
+      tags: [chains]
+      summary: Get chain info and latest block
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Chain info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChainInfo"
+        "404":
+          description: Chain not supported
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/indexer:
+    get:
+      operationId: getIndexerStatus
+      tags: [admin]
+      summary: Get on-chain indexer status
+      responses:
+        "200":
+          description: Indexer status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndexerStatus"
+
+  /admin/sync:
+    post:
+      operationId: triggerSync
+      tags: [admin]
+      summary: Trigger on-chain event indexer run
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResult"
+
+  /auth/nonce:
+    get:
+      operationId: getAuthNonce
+      tags: [auth]
+      summary: Request a sign-in nonce for an address
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Nonce and sign message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NonceResponse"
+        "400":
+          description: Invalid address
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/verify:
+    post:
+      operationId: verifySignature
+      tags: [auth]
+      summary: Verify a wallet signature and issue a session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifySignatureBody"
+      responses:
+        "200":
+          description: Session token issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Invalid signature
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/session:
+    get:
+      operationId: getAuthSession
+      tags: [auth]
+      summary: Get current session info from Bearer token
+      responses:
+        "200":
+          description: Session info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Invalidate the current session
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+
   /activity:
     get:
       operationId: listActivity
@@ -1024,3 +1324,240 @@ components:
           type: number
         avgEscrowDurationDays:
           type: number
+
+    AiReviewResult:
+      type: object
+      required: [id, aiVerdictSummary, model, generatedAt]
+      properties:
+        id:
+          type: string
+        aiVerdictSummary:
+          type: string
+        model:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+
+    EscalateDisputeBody:
+      type: object
+      properties:
+        chain:
+          type: string
+        klerosDisputeId:
+          type: string
+
+    KlerosEscalationResult:
+      type: object
+      required: [disputeId, klerosDisputeId, state, chain]
+      properties:
+        disputeId:
+          type: string
+        klerosDisputeId:
+          type: string
+        state:
+          type: string
+        chain:
+          type: string
+        simulated:
+          type: boolean
+        message:
+          type: string
+        adapterAddress:
+          type: string
+
+    KlerosStatus:
+      type: object
+      required: [escalated, state]
+      properties:
+        escalated:
+          type: boolean
+        klerosDisputeId:
+          type: string
+        state:
+          type: string
+        resolvedOutcomeIndex:
+          type: integer
+        message:
+          type: string
+        klerosCourtUrl:
+          type: string
+
+    SettlementLeaf:
+      type: object
+      required: [claimantAddress, amount, leafHash, proof]
+      properties:
+        claimantAddress:
+          type: string
+        amount:
+          type: string
+        leafHash:
+          type: string
+        proof:
+          type: array
+          items:
+            type: string
+        state:
+          type: string
+
+    SettlementResult:
+      type: object
+      required: [escrowId, merkleRoot, claimCount, leaves]
+      properties:
+        escrowId:
+          type: string
+        merkleRoot:
+          type: string
+        claimCount:
+          type: integer
+        leaves:
+          type: array
+          items:
+            $ref: "#/components/schemas/SettlementLeaf"
+
+    VerifyProofBody:
+      type: object
+      required: [claimantAddress, amount, proof, merkleRoot]
+      properties:
+        claimantAddress:
+          type: string
+        amount:
+          type: string
+        proof:
+          type: array
+          items:
+            type: string
+        merkleRoot:
+          type: string
+
+    VerifyProofResult:
+      type: object
+      required: [valid, claimantAddress, amount, escrowId]
+      properties:
+        valid:
+          type: boolean
+        claimantAddress:
+          type: string
+        amount:
+          type: string
+        escrowId:
+          type: string
+
+    ChainList:
+      type: object
+      required: [chains, count]
+      properties:
+        chains:
+          type: array
+          items:
+            type: string
+        count:
+          type: integer
+
+    ChainNativeCurrency:
+      type: object
+      required: [name, symbol, decimals]
+      properties:
+        name:
+          type: string
+        symbol:
+          type: string
+        decimals:
+          type: integer
+
+    ChainInfo:
+      type: object
+      required: [name, chainId, rpcConfigured, nativeCurrency]
+      properties:
+        name:
+          type: string
+        chainId:
+          type: integer
+        blockNumber:
+          type: string
+        rpcConfigured:
+          type: boolean
+        nativeCurrency:
+          $ref: "#/components/schemas/ChainNativeCurrency"
+
+    IndexerStatus:
+      type: object
+      required: [running, syncedContracts, eventsProcessed]
+      properties:
+        running:
+          type: boolean
+        lastRun:
+          type: string
+          format: date-time
+        lastError:
+          type: string
+        syncedContracts:
+          type: integer
+        eventsProcessed:
+          type: integer
+
+    SyncResult:
+      type: object
+      required: [ok, syncedContracts, eventsProcessed]
+      properties:
+        ok:
+          type: boolean
+        syncedContracts:
+          type: integer
+        eventsProcessed:
+          type: integer
+
+    NonceResponse:
+      type: object
+      required: [nonce, message, address]
+      properties:
+        nonce:
+          type: string
+        message:
+          type: string
+        address:
+          type: string
+        domain:
+          type: object
+          additionalProperties: true
+        types:
+          type: object
+          additionalProperties: true
+
+    VerifySignatureBody:
+      type: object
+      required: [address, signature, nonce]
+      properties:
+        address:
+          type: string
+        signature:
+          type: string
+        nonce:
+          type: string
+        issuedAt:
+          type: string
+        method:
+          type: string
+          enum: [personal_sign, eth_signTypedData_v4]
+
+    AuthSession:
+      type: object
+      required: [address]
+      properties:
+        address:
+          type: string
+        token:
+          type: string
+        expiresIn:
+          type: integer
+        issuedAt:
+          type: integer
+        valid:
+          type: boolean
+
+    OkResponse:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean

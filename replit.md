@@ -31,10 +31,23 @@ scripts/            Utility scripts
 - **TypeScript**: 5.9
 - **API framework**: Express 5
 - **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (v4), drizzle-zod
+- **Validation**: Zod (v4 via `zod/v4` import), drizzle-zod
 - **API codegen**: Orval (contract-first: OpenAPI → Zod + React Query)
 - **Frontend**: React 19, Vite, Wouter (routing), TailwindCSS v4, shadcn/ui
-- **Smart contracts**: Foundry (Solidity 0.8.24)
+- **Smart contracts**: Foundry v1.7.0 (Solidity 0.8.24) — forge binary at `~/.foundry/bin/forge`
+- **AI**: Anthropic claude-sonnet via Replit AI integrations proxy
+- **On-chain**: viem multi-chain provider (ethereum, arbitrum, optimism, polygon, base, sepolia, arbitrum-sepolia)
+
+## Completed Roadmap Items
+
+| Task | Feature | Status |
+|------|---------|--------|
+| T001 | AI Dispute Review — POST /api/disputes/:id/ai-review → Anthropic verdict | ✅ |
+| T002 | Merkle Tree Generation — POST /api/escrows/:id/settlement with proofs | ✅ |
+| T003 | On-chain Integration — viem, indexer polling, chain status endpoints | ✅ |
+| T004 | Foundry Compilation — forge installed, all 75 contracts compile clean | ✅ |
+| T005 | Kleros Adapter — escalate + kleros-status endpoints, frontend panel | ✅ |
+| T006 | Auth / Access Control — EIP-712 nonce/verify middleware, wallet connect UI | ✅ |
 
 ## Frontend Pages
 
@@ -42,14 +55,14 @@ All pages are wired in `artifacts/peerpool-web/src/App.tsx` via Wouter:
 
 | Route | Component | Description |
 |---|---|---|
-| `/` | Dashboard | Protocol stats, recent escrows, activity feed |
+| `/` | Dashboard | Protocol stats, chain status, sync button, recent escrows, activity feed |
 | `/escrows` | EscrowList | Paginated table with state/chain filters |
 | `/escrows/new` | CreateEscrow | Create escrow form with manifest picker |
 | `/escrows/:id` | EscrowDetail | Participants, votes, claims, state actions |
 | `/manifests` | ManifestList | Outcome manifest cards with IPFS hashes |
 | `/manifests/new` | CreateManifest | Register manifest with outcomes/conditions |
 | `/disputes` | DisputeList | Dispute table with Kleros escalation status |
-| `/disputes/:id` | DisputeDetail | AI verdict, Kleros ID, resolve action |
+| `/disputes/:id` | DisputeDetail | AI verdict panel, Kleros escalation panel, resolve action |
 | `/claims` | Claims | Merkle proof submission per escrow |
 | `/activity` | ActivityFeed | Protocol-wide event log |
 
@@ -57,6 +70,7 @@ All pages are wired in `artifacts/peerpool-web/src/App.tsx` via Wouter:
 
 All mounted at `/api` prefix:
 
+### Core
 - `GET /api/healthz` — health check
 - `GET /api/stats` — protocol-wide statistics
 - `GET/POST /api/escrows` — list / create escrows
@@ -74,6 +88,28 @@ All mounted at `/api` prefix:
 - `GET /api/escrows/summary` — escrow state breakdown
 - `GET /api/disputes/summary` — dispute state breakdown
 
+### T001: AI Dispute Review
+- `POST /api/disputes/:id/ai-review` — Anthropic-powered verdict summary
+
+### T002: Merkle Settlement
+- `POST /api/escrows/:id/settlement` — compute Merkle root + per-claimant proofs
+- `GET /api/escrows/:id/settlement/verify` — verify a proof against stored root
+
+### T003: On-chain / Indexer
+- `GET /api/chains` — supported chains + RPC status
+- `GET /api/admin/indexer` — indexer status (last block, running flag)
+- `POST /api/admin/sync` — trigger manual index run
+
+### T005: Kleros
+- `POST /api/disputes/:id/escalate` — escalate to Kleros arbitration
+- `GET /api/disputes/:id/kleros-status` — poll Kleros dispute status
+
+### T006: Auth
+- `GET /api/auth/nonce` — get EIP-712 nonce for wallet address
+- `POST /api/auth/verify` — verify EIP-712 signature → session
+- `GET /api/auth/session` — get current session
+- `POST /api/auth/logout` — clear session
+
 ## Key Commands
 
 ```bash
@@ -81,6 +117,12 @@ pnpm run typecheck                              # full typecheck across all pack
 pnpm run build                                 # typecheck + build all packages
 pnpm --filter @workspace/api-spec run codegen  # regenerate API hooks + Zod from OpenAPI
 pnpm --filter @workspace/db run push           # push DB schema (dev only)
+
+# Foundry (forge binary at ~/.foundry/bin/forge)
+export PATH="$HOME/.foundry/bin:$PATH"
+cd contracts && forge build                    # compile all 75 contracts
+cd contracts && forge test                     # run test suite
+cd contracts && forge install <dep>            # add git submodule dependency
 ```
 
 ## Design
@@ -92,18 +134,37 @@ pnpm --filter @workspace/db run push           # push DB schema (dev only)
 
 ## Smart Contracts (Foundry)
 
-Located in `contracts/` — NOT a pnpm workspace package. Requires:
+Located in `contracts/` — NOT a pnpm workspace package.
+
 ```bash
-cd contracts && forge install  # installs OZ and other deps via git submodules
-forge build                    # compile all contracts
-forge test                     # run test suite
+export PATH="$HOME/.foundry/bin:$PATH"
+cd contracts && forge build    # compiles all 75 files — warnings only, no errors
+cd contracts && forge test     # run test suite
 ```
 
 Key contracts: `PeerPoolEscrow`, `ManifestRegistry`, `FundingPool`, `VoteModule`, `DisputeController`, `KlerosAdapterV1`, `MerkleClaimDistributor`, `SettlementEngine`, `AttestationVerifier`, `FeeController`, `BondManager`.
 
+Git submodule deps in `contracts/lib/`: `forge-std`, `openzeppelin-contracts`, `openzeppelin-contracts-upgradeable`.
+
+## Server Libraries
+
+- `artifacts/api-server/src/lib/chain.ts` — viem multi-chain provider factory
+- `artifacts/api-server/src/lib/merkle.ts` — merkletreejs Merkle root + proof builder
+- `artifacts/api-server/src/lib/indexer.ts` — event polling service (configurable interval)
+- `artifacts/api-server/src/lib/auth.ts` — EIP-712 nonce + session management
+- `artifacts/api-server/src/lib/abis.ts` — inline PeerPoolEscrow / PeerPoolDispute ABIs
+
+## Frontend Libraries
+
+- `artifacts/peerpool-web/src/lib/wallet.ts` — EIP-712 wallet connect using window.ethereum
+- `artifacts/peerpool-web/src/lib/zodResolver.ts` — custom Zod v4-compatible form resolver (avoids @hookform/resolvers version mismatch)
+
 ## Notes
 
 - `lib/api-zod/src/index.ts` exports only from `./generated/api` (no duplicate type re-exports)
-- Mutation hooks (`useCreateClaim`, `useSubmitClaim`, `useResolveDispute`) take only options — pass `id`/`claimId` in the mutation variables object, not as hook arguments
+- Mutation hooks take only options — pass `id`/`claimId` in the mutation variables object
 - The shared proxy routes `/api` to the API server and `/` to the Vite frontend — no Vite proxy config needed
 - `fundedAmount` in escrow schema is `string | undefined` — always coalesce with `?? "0"` before passing to `formatAmount`
+- Zod forms use `makeZodResolver` from `@/lib/zodResolver` instead of `@hookform/resolvers/zod` — avoids v3/v4 type incompatibility
+- Kleros adapter gracefully falls back to simulated escalation if `KLEROS_ADAPTER_<CHAIN>` env vars are not set
+- AI integration uses `AI_INTEGRATIONS_ANTHROPIC_BASE_URL` + `AI_INTEGRATIONS_ANTHROPIC_API_KEY` (Replit-provisioned)

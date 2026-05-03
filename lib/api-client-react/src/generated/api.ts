@@ -19,6 +19,10 @@ import type {
 import type {
   ActivityList,
   AddParticipantBody,
+  AiReviewResult,
+  AuthSession,
+  ChainInfo,
+  ChainList,
   Claim,
   ClaimList,
   CreateClaimBody,
@@ -29,23 +33,35 @@ import type {
   DisputeList,
   DisputeSummary,
   ErrorResponse,
+  EscalateDisputeBody,
   Escrow,
   EscrowList,
   EscrowSummary,
+  GetAuthNonceParams,
   HealthStatus,
+  IndexerStatus,
+  KlerosEscalationResult,
+  KlerosStatus,
   ListActivityParams,
   ListDisputesParams,
   ListEscrowsParams,
   ListManifestsParams,
   Manifest,
   ManifestList,
+  NonceResponse,
+  OkResponse,
   Participant,
   ParticipantList,
   ProtocolStats,
   ResolveDisputeBody,
+  SettlementResult,
   SubmitClaimBody,
   SubmitVoteBody,
+  SyncResult,
   UpdateEscrowBody,
+  VerifyProofBody,
+  VerifyProofResult,
+  VerifySignatureBody,
   Vote,
   VoteList,
 } from "./api.schemas";
@@ -1863,6 +1879,1173 @@ export const useResolveDispute = <
   TContext
 > => {
   return useMutation(getResolveDisputeMutationOptions(options));
+};
+
+/**
+ * @summary Run AI review on a dispute and generate a verdict summary
+ */
+export const getRunAiDisputeReviewUrl = (id: string) => {
+  return `/api/disputes/${id}/ai-review`;
+};
+
+export const runAiDisputeReview = async (
+  id: string,
+  options?: RequestInit,
+): Promise<AiReviewResult> => {
+  return customFetch<AiReviewResult>(getRunAiDisputeReviewUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getRunAiDisputeReviewMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runAiDisputeReview>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof runAiDisputeReview>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["runAiDisputeReview"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof runAiDisputeReview>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return runAiDisputeReview(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RunAiDisputeReviewMutationResult = NonNullable<
+  Awaited<ReturnType<typeof runAiDisputeReview>>
+>;
+
+export type RunAiDisputeReviewMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Run AI review on a dispute and generate a verdict summary
+ */
+export const useRunAiDisputeReview = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runAiDisputeReview>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof runAiDisputeReview>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getRunAiDisputeReviewMutationOptions(options));
+};
+
+/**
+ * @summary Escalate a dispute to Kleros arbitration
+ */
+export const getEscalateDisputeToKlerosUrl = (id: string) => {
+  return `/api/disputes/${id}/escalate`;
+};
+
+export const escalateDisputeToKleros = async (
+  id: string,
+  escalateDisputeBody?: EscalateDisputeBody,
+  options?: RequestInit,
+): Promise<KlerosEscalationResult> => {
+  return customFetch<KlerosEscalationResult>(
+    getEscalateDisputeToKlerosUrl(id),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(escalateDisputeBody),
+    },
+  );
+};
+
+export const getEscalateDisputeToKlerosMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof escalateDisputeToKleros>>,
+    TError,
+    { id: string; data: BodyType<EscalateDisputeBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof escalateDisputeToKleros>>,
+  TError,
+  { id: string; data: BodyType<EscalateDisputeBody> },
+  TContext
+> => {
+  const mutationKey = ["escalateDisputeToKleros"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof escalateDisputeToKleros>>,
+    { id: string; data: BodyType<EscalateDisputeBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return escalateDisputeToKleros(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type EscalateDisputeToKlerosMutationResult = NonNullable<
+  Awaited<ReturnType<typeof escalateDisputeToKleros>>
+>;
+export type EscalateDisputeToKlerosMutationBody = BodyType<EscalateDisputeBody>;
+export type EscalateDisputeToKlerosMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Escalate a dispute to Kleros arbitration
+ */
+export const useEscalateDisputeToKleros = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof escalateDisputeToKleros>>,
+    TError,
+    { id: string; data: BodyType<EscalateDisputeBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof escalateDisputeToKleros>>,
+  TError,
+  { id: string; data: BodyType<EscalateDisputeBody> },
+  TContext
+> => {
+  return useMutation(getEscalateDisputeToKlerosMutationOptions(options));
+};
+
+/**
+ * @summary Get Kleros arbitration status for a dispute
+ */
+export const getGetKlerosStatusUrl = (id: string) => {
+  return `/api/disputes/${id}/kleros-status`;
+};
+
+export const getKlerosStatus = async (
+  id: string,
+  options?: RequestInit,
+): Promise<KlerosStatus> => {
+  return customFetch<KlerosStatus>(getGetKlerosStatusUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetKlerosStatusQueryKey = (id: string) => {
+  return [`/api/disputes/${id}/kleros-status`] as const;
+};
+
+export const getGetKlerosStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getKlerosStatus>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getKlerosStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetKlerosStatusQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getKlerosStatus>>> = ({
+    signal,
+  }) => getKlerosStatus(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getKlerosStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetKlerosStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getKlerosStatus>>
+>;
+export type GetKlerosStatusQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get Kleros arbitration status for a dispute
+ */
+
+export function useGetKlerosStatus<
+  TData = Awaited<ReturnType<typeof getKlerosStatus>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getKlerosStatus>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetKlerosStatusQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get settlement Merkle root and proofs for an escrow
+ */
+export const getGetSettlementUrl = (id: string) => {
+  return `/api/escrows/${id}/settlement`;
+};
+
+export const getSettlement = async (
+  id: string,
+  options?: RequestInit,
+): Promise<SettlementResult> => {
+  return customFetch<SettlementResult>(getGetSettlementUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetSettlementQueryKey = (id: string) => {
+  return [`/api/escrows/${id}/settlement`] as const;
+};
+
+export const getGetSettlementQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSettlement>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getSettlement>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetSettlementQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getSettlement>>> = ({
+    signal,
+  }) => getSettlement(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getSettlement>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetSettlementQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSettlement>>
+>;
+export type GetSettlementQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get settlement Merkle root and proofs for an escrow
+ */
+
+export function useGetSettlement<
+  TData = Awaited<ReturnType<typeof getSettlement>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getSettlement>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetSettlementQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Compute Merkle settlement root from all claims for an escrow
+ */
+export const getComputeSettlementUrl = (id: string) => {
+  return `/api/escrows/${id}/settlement`;
+};
+
+export const computeSettlement = async (
+  id: string,
+  options?: RequestInit,
+): Promise<SettlementResult> => {
+  return customFetch<SettlementResult>(getComputeSettlementUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getComputeSettlementMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof computeSettlement>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof computeSettlement>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["computeSettlement"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof computeSettlement>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return computeSettlement(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ComputeSettlementMutationResult = NonNullable<
+  Awaited<ReturnType<typeof computeSettlement>>
+>;
+
+export type ComputeSettlementMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Compute Merkle settlement root from all claims for an escrow
+ */
+export const useComputeSettlement = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof computeSettlement>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof computeSettlement>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getComputeSettlementMutationOptions(options));
+};
+
+/**
+ * @summary Verify a Merkle proof for a claim allocation
+ */
+export const getVerifySettlementProofUrl = (id: string) => {
+  return `/api/escrows/${id}/settlement/verify`;
+};
+
+export const verifySettlementProof = async (
+  id: string,
+  verifyProofBody: VerifyProofBody,
+  options?: RequestInit,
+): Promise<VerifyProofResult> => {
+  return customFetch<VerifyProofResult>(getVerifySettlementProofUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(verifyProofBody),
+  });
+};
+
+export const getVerifySettlementProofMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifySettlementProof>>,
+    TError,
+    { id: string; data: BodyType<VerifyProofBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof verifySettlementProof>>,
+  TError,
+  { id: string; data: BodyType<VerifyProofBody> },
+  TContext
+> => {
+  const mutationKey = ["verifySettlementProof"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof verifySettlementProof>>,
+    { id: string; data: BodyType<VerifyProofBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return verifySettlementProof(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type VerifySettlementProofMutationResult = NonNullable<
+  Awaited<ReturnType<typeof verifySettlementProof>>
+>;
+export type VerifySettlementProofMutationBody = BodyType<VerifyProofBody>;
+export type VerifySettlementProofMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Verify a Merkle proof for a claim allocation
+ */
+export const useVerifySettlementProof = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifySettlementProof>>,
+    TError,
+    { id: string; data: BodyType<VerifyProofBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof verifySettlementProof>>,
+  TError,
+  { id: string; data: BodyType<VerifyProofBody> },
+  TContext
+> => {
+  return useMutation(getVerifySettlementProofMutationOptions(options));
+};
+
+/**
+ * @summary List supported chains
+ */
+export const getListChainsUrl = () => {
+  return `/api/chains`;
+};
+
+export const listChains = async (options?: RequestInit): Promise<ChainList> => {
+  return customFetch<ChainList>(getListChainsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListChainsQueryKey = () => {
+  return [`/api/chains`] as const;
+};
+
+export const getListChainsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listChains>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listChains>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListChainsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listChains>>> = ({
+    signal,
+  }) => listChains({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listChains>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListChainsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listChains>>
+>;
+export type ListChainsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List supported chains
+ */
+
+export function useListChains<
+  TData = Awaited<ReturnType<typeof listChains>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listChains>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListChainsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get chain info and latest block
+ */
+export const getGetChainUrl = (name: string) => {
+  return `/api/chains/${name}`;
+};
+
+export const getChain = async (
+  name: string,
+  options?: RequestInit,
+): Promise<ChainInfo> => {
+  return customFetch<ChainInfo>(getGetChainUrl(name), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetChainQueryKey = (name: string) => {
+  return [`/api/chains/${name}`] as const;
+};
+
+export const getGetChainQueryOptions = <
+  TData = Awaited<ReturnType<typeof getChain>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  name: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getChain>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetChainQueryKey(name);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getChain>>> = ({
+    signal,
+  }) => getChain(name, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!name,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getChain>>, TError, TData> & {
+    queryKey: QueryKey;
+  };
+};
+
+export type GetChainQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getChain>>
+>;
+export type GetChainQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get chain info and latest block
+ */
+
+export function useGetChain<
+  TData = Awaited<ReturnType<typeof getChain>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  name: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getChain>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetChainQueryOptions(name, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get on-chain indexer status
+ */
+export const getGetIndexerStatusUrl = () => {
+  return `/api/admin/indexer`;
+};
+
+export const getIndexerStatus = async (
+  options?: RequestInit,
+): Promise<IndexerStatus> => {
+  return customFetch<IndexerStatus>(getGetIndexerStatusUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetIndexerStatusQueryKey = () => {
+  return [`/api/admin/indexer`] as const;
+};
+
+export const getGetIndexerStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getIndexerStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getIndexerStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetIndexerStatusQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getIndexerStatus>>
+  > = ({ signal }) => getIndexerStatus({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getIndexerStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetIndexerStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getIndexerStatus>>
+>;
+export type GetIndexerStatusQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get on-chain indexer status
+ */
+
+export function useGetIndexerStatus<
+  TData = Awaited<ReturnType<typeof getIndexerStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getIndexerStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetIndexerStatusQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Trigger on-chain event indexer run
+ */
+export const getTriggerSyncUrl = () => {
+  return `/api/admin/sync`;
+};
+
+export const triggerSync = async (
+  options?: RequestInit,
+): Promise<SyncResult> => {
+  return customFetch<SyncResult>(getTriggerSyncUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getTriggerSyncMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof triggerSync>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof triggerSync>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["triggerSync"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof triggerSync>>,
+    void
+  > = () => {
+    return triggerSync(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type TriggerSyncMutationResult = NonNullable<
+  Awaited<ReturnType<typeof triggerSync>>
+>;
+
+export type TriggerSyncMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Trigger on-chain event indexer run
+ */
+export const useTriggerSync = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof triggerSync>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof triggerSync>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getTriggerSyncMutationOptions(options));
+};
+
+/**
+ * @summary Request a sign-in nonce for an address
+ */
+export const getGetAuthNonceUrl = (params: GetAuthNonceParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/auth/nonce?${stringifiedParams}`
+    : `/api/auth/nonce`;
+};
+
+export const getAuthNonce = async (
+  params: GetAuthNonceParams,
+  options?: RequestInit,
+): Promise<NonceResponse> => {
+  return customFetch<NonceResponse>(getGetAuthNonceUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAuthNonceQueryKey = (params?: GetAuthNonceParams) => {
+  return [`/api/auth/nonce`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetAuthNonceQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAuthNonce>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  params: GetAuthNonceParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAuthNonce>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAuthNonceQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthNonce>>> = ({
+    signal,
+  }) => getAuthNonce(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAuthNonce>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAuthNonceQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuthNonce>>
+>;
+export type GetAuthNonceQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Request a sign-in nonce for an address
+ */
+
+export function useGetAuthNonce<
+  TData = Awaited<ReturnType<typeof getAuthNonce>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  params: GetAuthNonceParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAuthNonce>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAuthNonceQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Verify a wallet signature and issue a session token
+ */
+export const getVerifySignatureUrl = () => {
+  return `/api/auth/verify`;
+};
+
+export const verifySignature = async (
+  verifySignatureBody: VerifySignatureBody,
+  options?: RequestInit,
+): Promise<AuthSession> => {
+  return customFetch<AuthSession>(getVerifySignatureUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(verifySignatureBody),
+  });
+};
+
+export const getVerifySignatureMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifySignature>>,
+    TError,
+    { data: BodyType<VerifySignatureBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof verifySignature>>,
+  TError,
+  { data: BodyType<VerifySignatureBody> },
+  TContext
+> => {
+  const mutationKey = ["verifySignature"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof verifySignature>>,
+    { data: BodyType<VerifySignatureBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return verifySignature(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type VerifySignatureMutationResult = NonNullable<
+  Awaited<ReturnType<typeof verifySignature>>
+>;
+export type VerifySignatureMutationBody = BodyType<VerifySignatureBody>;
+export type VerifySignatureMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Verify a wallet signature and issue a session token
+ */
+export const useVerifySignature = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof verifySignature>>,
+    TError,
+    { data: BodyType<VerifySignatureBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof verifySignature>>,
+  TError,
+  { data: BodyType<VerifySignatureBody> },
+  TContext
+> => {
+  return useMutation(getVerifySignatureMutationOptions(options));
+};
+
+/**
+ * @summary Get current session info from Bearer token
+ */
+export const getGetAuthSessionUrl = () => {
+  return `/api/auth/session`;
+};
+
+export const getAuthSession = async (
+  options?: RequestInit,
+): Promise<AuthSession> => {
+  return customFetch<AuthSession>(getGetAuthSessionUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAuthSessionQueryKey = () => {
+  return [`/api/auth/session`] as const;
+};
+
+export const getGetAuthSessionQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAuthSession>>,
+  TError = ErrorType<ErrorResponse>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAuthSession>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAuthSessionQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuthSession>>> = ({
+    signal,
+  }) => getAuthSession({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAuthSession>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAuthSessionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAuthSession>>
+>;
+export type GetAuthSessionQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get current session info from Bearer token
+ */
+
+export function useGetAuthSession<
+  TData = Awaited<ReturnType<typeof getAuthSession>>,
+  TError = ErrorType<ErrorResponse>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAuthSession>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAuthSessionQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Invalidate the current session
+ */
+export const getLogoutUrl = () => {
+  return `/api/auth/logout`;
+};
+
+export const logout = async (options?: RequestInit): Promise<OkResponse> => {
+  return customFetch<OkResponse>(getLogoutUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getLogoutMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof logout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["logout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof logout>>,
+    void
+  > = () => {
+    return logout(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type LogoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof logout>>
+>;
+
+export type LogoutMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Invalidate the current session
+ */
+export const useLogout = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof logout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof logout>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getLogoutMutationOptions(options));
 };
 
 /**

@@ -14,6 +14,7 @@ import { DisputeDetail } from "@/pages/DisputeDetail";
 import { Claims } from "@/pages/Claims";
 import { ActivityFeed } from "@/pages/ActivityFeed";
 import NotFound from "@/pages/not-found";
+import { WalletContext, useWalletState } from "@/lib/wallet";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,15 +45,26 @@ function Router() {
   );
 }
 
+function WalletProvider({ children }: { children: React.ReactNode }) {
+  const wallet = useWalletState();
+  return (
+    <WalletContext.Provider value={wallet}>
+      {children}
+    </WalletContext.Provider>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
+      <WalletProvider>
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </WalletProvider>
     </QueryClientProvider>
   );
 }

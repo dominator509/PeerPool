@@ -34,7 +34,7 @@ interface IDisputeController {
     function openDispute(bytes32 escrowId, bytes calldata evidence) external payable returns (bytes32 disputeId);
 
     /// @notice Escalate an open dispute to external arbitration
-    function escalate(bytes32 disputeId) external;
+    function escalate(bytes32 disputeId) external payable;
 
     /// @notice Propose a bounded AI-assisted verdict (non-custodial, requires ratification)
     function proposeVerdict(bytes32 disputeId, uint8 outcomeIndex, bytes calldata verdictData) external;

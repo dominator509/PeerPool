@@ -43,7 +43,6 @@ interface IEscrow {
 
     event EscrowCreated(bytes32 indexed escrowId, address indexed creator, bytes32 manifestHash);
     event ParticipantAdded(bytes32 indexed escrowId, address indexed participant, ParticipantRole role);
-    event Deposited(bytes32 indexed escrowId, address indexed depositor, uint256 amount);
     event EscrowFunded(bytes32 indexed escrowId, uint256 totalAmount);
     event OutcomeProposed(bytes32 indexed escrowId, uint8 outcomeIndex, address proposer);
     event EscrowSettled(bytes32 indexed escrowId, uint8 outcomeIndex);

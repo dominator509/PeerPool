@@ -5,3 +5,5 @@ export * from "./votes";
 export * from "./disputes";
 export * from "./claims";
 export * from "./activity";
+export * from "./conversations";
+export * from "./messages";

@@ -300,6 +300,139 @@ export interface ProtocolStats {
   avgEscrowDurationDays?: number;
 }
 
+export interface AiReviewResult {
+  id: string;
+  aiVerdictSummary: string;
+  model: string;
+  generatedAt: string;
+}
+
+export interface EscalateDisputeBody {
+  chain?: string;
+  klerosDisputeId?: string;
+}
+
+export interface KlerosEscalationResult {
+  disputeId: string;
+  klerosDisputeId: string;
+  state: string;
+  chain: string;
+  simulated?: boolean;
+  message?: string;
+  adapterAddress?: string;
+}
+
+export interface KlerosStatus {
+  escalated: boolean;
+  klerosDisputeId?: string;
+  state: string;
+  resolvedOutcomeIndex?: number;
+  message?: string;
+  klerosCourtUrl?: string;
+}
+
+export interface SettlementLeaf {
+  claimantAddress: string;
+  amount: string;
+  leafHash: string;
+  proof: string[];
+  state?: string;
+}
+
+export interface SettlementResult {
+  escrowId: string;
+  merkleRoot: string;
+  claimCount: number;
+  leaves: SettlementLeaf[];
+}
+
+export interface VerifyProofBody {
+  claimantAddress: string;
+  amount: string;
+  proof: string[];
+  merkleRoot: string;
+}
+
+export interface VerifyProofResult {
+  valid: boolean;
+  claimantAddress: string;
+  amount: string;
+  escrowId: string;
+}
+
+export interface ChainList {
+  chains: string[];
+  count: number;
+}
+
+export interface ChainNativeCurrency {
+  name: string;
+  symbol: string;
+  decimals: number;
+}
+
+export interface ChainInfo {
+  name: string;
+  chainId: number;
+  blockNumber?: string;
+  rpcConfigured: boolean;
+  nativeCurrency: ChainNativeCurrency;
+}
+
+export interface IndexerStatus {
+  running: boolean;
+  lastRun?: string;
+  lastError?: string;
+  syncedContracts: number;
+  eventsProcessed: number;
+}
+
+export interface SyncResult {
+  ok: boolean;
+  syncedContracts: number;
+  eventsProcessed: number;
+}
+
+export type NonceResponseDomain = { [key: string]: unknown };
+
+export type NonceResponseTypes = { [key: string]: unknown };
+
+export interface NonceResponse {
+  nonce: string;
+  message: string;
+  address: string;
+  domain?: NonceResponseDomain;
+  types?: NonceResponseTypes;
+}
+
+export type VerifySignatureBodyMethod =
+  (typeof VerifySignatureBodyMethod)[keyof typeof VerifySignatureBodyMethod];
+
+export const VerifySignatureBodyMethod = {
+  personal_sign: "personal_sign",
+  eth_signTypedData_v4: "eth_signTypedData_v4",
+} as const;
+
+export interface VerifySignatureBody {
+  address: string;
+  signature: string;
+  nonce: string;
+  issuedAt?: string;
+  method?: VerifySignatureBodyMethod;
+}
+
+export interface AuthSession {
+  address: string;
+  token?: string;
+  expiresIn?: number;
+  issuedAt?: number;
+  valid?: boolean;
+}
+
+export interface OkResponse {
+  ok: boolean;
+}
+
 export type ListEscrowsParams = {
   state?: ListEscrowsState;
   chain?: string;
@@ -339,6 +472,10 @@ export const ListDisputesState = {
   resolved: "resolved",
   closed: "closed",
 } as const;
+
+export type GetAuthNonceParams = {
+  address: string;
+};
 
 export type ListActivityParams = {
   escrow_id?: string;

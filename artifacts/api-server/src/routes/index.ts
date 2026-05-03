@@ -1,13 +1,18 @@
 import { Router, type IRouter } from "express";
-import healthRouter from "./health";
-import escrowsRouter from "./escrows";
-import manifestsRouter from "./manifests";
-import participantsRouter from "./participants";
-import votesRouter from "./votes";
-import disputesRouter from "./disputes";
-import claimsRouter from "./claims";
-import activityRouter from "./activity";
-import statsRouter from "./stats";
+import healthRouter from "./health.js";
+import escrowsRouter from "./escrows.js";
+import manifestsRouter from "./manifests.js";
+import participantsRouter from "./participants.js";
+import votesRouter from "./votes.js";
+import disputesRouter from "./disputes.js";
+import claimsRouter from "./claims.js";
+import activityRouter from "./activity.js";
+import statsRouter from "./stats.js";
+import aiRouter from "./ai.js";
+import settlementRouter from "./settlement.js";
+import chainsRouter from "./chains.js";
+import klerosRouter from "./kleros.js";
+import authRouter from "./auth.js";
 
 const router: IRouter = Router();
 
@@ -20,5 +25,10 @@ router.use(disputesRouter);
 router.use(claimsRouter);
 router.use(activityRouter);
 router.use(statsRouter);
+router.use(aiRouter);
+router.use(settlementRouter);
+router.use(chainsRouter);
+router.use(klerosRouter);
+router.use(authRouter);
 
 export default router;

@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { useWallet } from "@/lib/wallet";
 import {
   LayoutDashboard,
   LockKeyhole,
@@ -8,7 +9,11 @@ import {
   Coins,
   Activity,
   ChevronRight,
+  Wallet,
+  LogOut,
+  Link2,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -21,6 +26,7 @@ const NAV_ITEMS = [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+  const { address, isConnecting, connect, disconnect } = useWallet();
 
   return (
     <div className="flex h-screen bg-[#0a0e1a] text-slate-200 overflow-hidden">
@@ -66,8 +72,40 @@ export function Layout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
+        {/* Wallet Connect */}
+        <div className="px-3 py-3 border-t border-slate-800">
+          {address ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-emerald-950/40 border border-emerald-800/40">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                <span className="text-[11px] font-mono text-emerald-300 truncate flex-1">
+                  {address.slice(0, 6)}…{address.slice(-4)}
+                </span>
+              </div>
+              <button
+                onClick={disconnect}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 transition-colors"
+                data-testid="disconnect-btn"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Disconnect
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={connect}
+              disabled={isConnecting}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium bg-indigo-600/20 border border-indigo-600/40 text-indigo-300 hover:bg-indigo-600/30 hover:border-indigo-500/60 transition-colors disabled:opacity-50"
+              data-testid="connect-wallet-btn"
+            >
+              <Wallet className="w-3.5 h-3.5" />
+              {isConnecting ? "Connecting…" : "Connect Wallet"}
+            </button>
+          )}
+        </div>
+
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-slate-800">
+        <div className="px-5 py-3 border-t border-slate-800">
           <p className="text-[10px] text-slate-600">EVM · Multi-chain · Non-custodial</p>
         </div>
       </aside>

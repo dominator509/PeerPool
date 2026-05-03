@@ -107,7 +107,7 @@ contract SettlementEngine is ISettlementEngine {
         override
         onlyAuthorized
     {
-        require(!_settlements[escrowId].executedAt > 0 ? false : true, "SettlementEngine: already settled");
+        require(_settlements[escrowId].executedAt == 0, "SettlementEngine: already settled");
 
         (
             bytes32 manifestHash,
@@ -167,7 +167,7 @@ contract SettlementEngine is ISettlementEngine {
         (,address token,,,) = escrow.getConfig(escrowId);
         merkleDistributor.setDistribution(escrowId, merkleRoot, token, totalAmount);
 
-        _settlements[escrowId].merkleRoot = merkleRoot;
+        _settlements[escrowId].settlementRoot = merkleRoot;
         _settlements[escrowId].useMerkle = true;
 
         emit MerkleRootSet(escrowId, merkleRoot, totalAmount);
