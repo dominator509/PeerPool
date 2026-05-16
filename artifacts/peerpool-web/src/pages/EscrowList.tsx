@@ -23,7 +23,7 @@ export function EscrowList() {
   if (state) params.state = state;
   if (chain) params.chain = chain;
 
-  const { data, isLoading } = useListEscrows(params, {
+  const { data, isLoading, error } = useListEscrows(params, {
     query: { queryKey: getListEscrowsQueryKey(params) },
   });
 
@@ -70,6 +70,18 @@ export function EscrowList() {
         </Select>
       </div>
 
+      {error && (
+        <div
+          className="mb-4 rounded-lg border border-red-800/60 bg-red-950/30 px-4 py-3 text-sm text-red-200"
+          data-testid="escrows-error"
+        >
+          <p className="font-medium">Escrows could not be loaded.</p>
+          <p className="mt-1 text-xs text-red-300/80">
+            {error instanceof Error ? error.message : "The API did not return escrow data."}
+          </p>
+        </div>
+      )}
+
       <div className="rounded-lg border border-slate-800 overflow-hidden hidden md:block">
         <table className="w-full text-sm">
           <thead>
@@ -91,6 +103,12 @@ export function EscrowList() {
                   </td>
                 </tr>
               ))
+            ) : error ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center text-sm text-slate-500">
+                  Resolve the API issue, then refresh this page.
+                </td>
+              </tr>
             ) : !data?.items?.length ? (
               <tr>
                 <td colSpan={6}>
@@ -144,6 +162,10 @@ export function EscrowList() {
       <div className="md:hidden space-y-3">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-24 bg-slate-800 rounded-lg animate-pulse" />)
+        ) : error ? (
+          <p className="rounded-lg border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-500">
+            Resolve the API issue, then refresh this page.
+          </p>
         ) : !data?.items?.length ? (
           <EmptyState icon={LockKeyhole} title="No escrows found" description="Try changing the filters or create a new escrow" />
         ) : (

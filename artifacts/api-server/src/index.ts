@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { stopIndexerSchedule } from "./lib/indexer";
 
 const rawPort = process.env["PORT"];
 
@@ -15,7 +16,7 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-app.listen(port, (err) => {
+const server = app.listen(port, (err) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
     process.exit(1);
@@ -23,3 +24,20 @@ app.listen(port, (err) => {
 
   logger.info({ port }, "Server listening");
 });
+
+function shutdown(signal: NodeJS.Signals): void {
+  logger.info({ signal }, "Shutting down server");
+  stopIndexerSchedule();
+
+  server.close((err) => {
+    if (err) {
+      logger.error({ err }, "Error during server shutdown");
+      process.exit(1);
+    }
+
+    process.exit(0);
+  });
+}
+
+process.once("SIGINT", shutdown);
+process.once("SIGTERM", shutdown);

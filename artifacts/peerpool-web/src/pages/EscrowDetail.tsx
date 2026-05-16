@@ -1,5 +1,8 @@
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { useParams, Link } from "wouter";
 import {
+  useAddParticipant,
   useGetEscrow,
   useListParticipants,
   useListVotes,
@@ -16,16 +19,43 @@ import { AddressBadge } from "@/components/AddressBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { formatDate, formatAmount } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useWallet } from "@/lib/wallet";
-import { ArrowLeft, Users, Vote, Coins, AlertTriangle, GitBranch, Loader2 } from "lucide-react";
+import { ArrowLeft, Users, Vote, Coins, AlertTriangle, GitBranch, Loader2, Plus } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL ?? "/";
 const API_BASE = `${BASE}api`.replace(/\/\//g, "/");
+type ParticipantRoleValue = "depositor" | "beneficiary" | "arbitrator" | "observer";
+
+const PARTICIPANT_ROLES: Array<{ value: ParticipantRoleValue; label: string }> = [
+  { value: "beneficiary", label: "Can receive payout" },
+  { value: "depositor", label: "Depositor" },
+  { value: "arbitrator", label: "Arbitrator" },
+  { value: "observer", label: "Observer" },
+];
+
+function parseParticipantAddresses(value: string): string[] {
+  return Array.from(
+    new Set(
+      value
+        .split(/[\s,;]+/)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  );
+}
 
 export function EscrowDetail() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { sessionToken } = useWallet();
+  const [participantAddresses, setParticipantAddresses] = useState("");
+  const [participantRole, setParticipantRole] = useState<ParticipantRoleValue>("beneficiary");
+  const [participantFundedAmount, setParticipantFundedAmount] = useState("");
+  const [participantFormError, setParticipantFormError] = useState<string | null>(null);
 
   const { data: escrow, isLoading } = useGetEscrow(id!, {
     query: { enabled: !!id, queryKey: getGetEscrowQueryKey(id!) },
@@ -60,6 +90,49 @@ export function EscrowDetail() {
       queryClient.invalidateQueries({ queryKey: getListClaimsQueryKey(id!) });
     },
   });
+  const { mutateAsync: addParticipant, isPending: addingParticipant, error: addParticipantError } = useAddParticipant({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListParticipantsQueryKey(id!) });
+        queryClient.invalidateQueries({ queryKey: getGetEscrowQueryKey(id!) });
+      },
+    },
+  });
+
+  async function submitParticipants(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!id) return;
+
+    const addresses = parseParticipantAddresses(participantAddresses);
+    const invalid = addresses.find((address) => !/^0x[a-fA-F0-9]{40}$/.test(address));
+
+    if (!sessionToken) {
+      setParticipantFormError("Connect your wallet before adding participants.");
+      return;
+    }
+    if (!addresses.length) {
+      setParticipantFormError("Paste at least one participant wallet address.");
+      return;
+    }
+    if (invalid) {
+      setParticipantFormError(`This address does not look valid: ${invalid}`);
+      return;
+    }
+
+    setParticipantFormError(null);
+    for (const address of addresses) {
+      await addParticipant({
+        id,
+        data: {
+          address,
+          role: participantRole,
+          fundedAmount: participantFundedAmount.trim() || undefined,
+        },
+      });
+    }
+    setParticipantAddresses("");
+    setParticipantFundedAmount("");
+  }
 
   if (isLoading) {
     return (
@@ -183,13 +256,73 @@ export function EscrowDetail() {
 
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-800 bg-slate-900/40">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-            <Users className="w-4 h-4 text-slate-500" />
-            <span className="text-sm font-medium text-slate-300">Participants ({participants?.items?.length ?? 0})</span>
+          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-slate-500" />
+              <span className="text-sm font-medium text-slate-300">Participants ({participants?.items?.length ?? 0})</span>
+            </div>
           </div>
+
+          <form onSubmit={submitParticipants} className="border-b border-slate-800/60 p-4 space-y-3" data-testid="add-participants-form">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_180px_180px] gap-3">
+              <div>
+                <Label className="text-xs text-slate-400 mb-1.5">Participant wallets</Label>
+                <Textarea
+                  value={participantAddresses}
+                  onChange={(event) => setParticipantAddresses(event.target.value)}
+                  placeholder="Paste one or many 0x wallet addresses"
+                  className="bg-slate-900 border-slate-700 text-slate-200 font-mono text-xs placeholder:text-slate-600 min-h-[74px]"
+                  data-testid="participant-addresses-input"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-slate-400 mb-1.5">Role</Label>
+                <Select value={participantRole} onValueChange={(value) => setParticipantRole(value as ParticipantRoleValue)}>
+                  <SelectTrigger className="bg-slate-900 border-slate-700 text-slate-200" data-testid="participant-role-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700">
+                    {PARTICIPANT_ROLES.map((role) => (
+                      <SelectItem key={role.value} value={role.value} className="text-slate-200">
+                        {role.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs text-slate-400 mb-1.5">Recorded contribution</Label>
+                <Input
+                  value={participantFundedAmount}
+                  onChange={(event) => setParticipantFundedAmount(event.target.value)}
+                  placeholder="Optional"
+                  className="bg-slate-900 border-slate-700 text-slate-200 text-xs placeholder:text-slate-600"
+                  data-testid="participant-funded-amount-input"
+                />
+              </div>
+            </div>
+            {(participantFormError || addParticipantError) && (
+              <p className="text-xs text-red-400 rounded-md border border-red-800/60 bg-red-900/20 px-3 py-2">
+                {participantFormError ?? "Could not add participants. Check your wallet connection and try again."}
+              </p>
+            )}
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                size="sm"
+                disabled={addingParticipant}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5"
+                data-testid="add-participants-btn"
+              >
+                {addingParticipant ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                {addingParticipant ? "Adding..." : "Add Participants"}
+              </Button>
+            </div>
+          </form>
+
           <div className="divide-y divide-slate-800/60">
             {!participants?.items?.length ? (
-              <EmptyState icon={Users} title="No participants yet" />
+              <EmptyState icon={Users} title="No participants yet" description="Paste wallet addresses above to build the escrow roster." />
             ) : (
               participants?.items?.map((p) => (
                 <div key={p.id} className="flex items-center justify-between px-4 py-3" data-testid="participant-row">

@@ -13,6 +13,9 @@
       "path": "./lib/api-zod"
     },
     {
+      "path": "./lib/protocol-config"
+    },
+    {
       "path": "./lib/integrations-anthropic-ai"
     }
   ]

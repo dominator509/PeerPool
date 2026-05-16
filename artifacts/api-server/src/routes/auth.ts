@@ -22,11 +22,12 @@ router.get("/auth/nonce", (req, res) => {
     return;
   }
 
-  const nonce = generateNonce(address);
-  const message = buildSignMessage(address, nonce);
+  const { nonce, issuedAt } = generateNonce(address);
+  const message = buildSignMessage(address, nonce, issuedAt);
 
   res.json({
     nonce,
+    issuedAt,
     message,
     address,
     domain: EIP712_DOMAIN,
@@ -49,8 +50,8 @@ router.post("/auth/verify", async (req, res) => {
       return;
     }
 
-    const storedNonce = consumeNonce(address);
-    if (!storedNonce || storedNonce !== nonce) {
+    const nonceEntry = consumeNonce(address);
+    if (!nonceEntry || nonceEntry.nonce !== nonce) {
       res.status(401).json({ error: "Invalid or expired nonce" });
       return;
     }
@@ -58,6 +59,11 @@ router.post("/auth/verify", async (req, res) => {
     let valid = false;
 
     if (method === "eth_signTypedData_v4" && issuedAt) {
+      if (issuedAt !== nonceEntry.issuedAt) {
+        res.status(401).json({ error: "Invalid or expired nonce" });
+        return;
+      }
+
       valid = await verifyEIP712Signature({
         address,
         nonce,
@@ -68,6 +74,7 @@ router.post("/auth/verify", async (req, res) => {
       valid = await verifySignature({
         address,
         nonce,
+        issuedAt: nonceEntry.issuedAt,
         signature: signature as Hex,
       });
     }

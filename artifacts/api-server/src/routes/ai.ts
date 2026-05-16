@@ -2,7 +2,7 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import { disputesTable, escrowsTable, manifestsTable, claimsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
-import { anthropic } from "@workspace/integrations-anthropic-ai";
+import { getAnthropicClient } from "@workspace/integrations-anthropic-ai";
 import { requireAuth } from "../lib/auth.js";
 
 const router = Router();
@@ -68,7 +68,7 @@ Provide a structured response with:
 
 Format as plain text, no markdown.`;
 
-    const message = await anthropic.messages.create({
+    const message = await getAnthropicClient().messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 8192,
       messages: [

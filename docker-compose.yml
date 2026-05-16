@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: secure-escrow-hub-postgres
+    environment:
+      POSTGRES_DB: peerpool
+      POSTGRES_USER: peerpool
+      POSTGRES_PASSWORD: peerpool
+    ports:
+      - "54329:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U peerpool -d peerpool"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    volumes:
+      - peerpool-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  peerpool-postgres-data:

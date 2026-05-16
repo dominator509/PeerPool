@@ -10,6 +10,12 @@ import { FileText, Plus } from "lucide-react";
 
 const PAGE_SIZE = 20;
 
+function formatOutcomePercent(bps?: number): string | null {
+  if (typeof bps !== "number") return null;
+  const percent = bps / 100;
+  return Number.isInteger(percent) ? `${percent}%` : `${percent.toFixed(2).replace(/\.?0+$/, "")}%`;
+}
+
 export function ManifestList() {
   const [page, setPage] = useState(0);
 
@@ -27,7 +33,7 @@ export function ManifestList() {
           <Link href="/manifests/new">
             <Button size="sm" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-1.5" data-testid="create-manifest-btn">
               <Plus className="w-3.5 h-3.5" />
-              Register Manifest
+              Build Manifest
             </Button>
           </Link>
         }
@@ -43,11 +49,11 @@ export function ManifestList() {
             <EmptyState
               icon={FileText}
               title="No manifests registered"
-              description="Manifests define the outcome conditions for escrows"
+              description="Build a payout rulebook first, then attach it to an escrow."
               action={
                 <Link href="/manifests/new">
                   <Button size="sm" variant="outline" className="border-slate-700 text-slate-300">
-                    Register Manifest
+                    Build Manifest
                   </Button>
                 </Link>
               }
@@ -73,16 +79,19 @@ export function ManifestList() {
               {/* Outcomes */}
               {Array.isArray(m.outcomes) && m.outcomes.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1.5">Outcomes</p>
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-1.5">Payout results</p>
                   <div className="flex gap-1 flex-wrap">
-                    {(m.outcomes as Array<{ index: number; label: string }>).map((o) => (
+                    {(m.outcomes as Array<{ index: number; label: string; distributionBps?: number }>).map((o) => {
+                      const payout = formatOutcomePercent(o.distributionBps);
+                      return (
                       <span
                         key={o.index}
                         className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700"
                       >
-                        {o.index}: {o.label}
+                        {o.label}{payout ? ` - ${payout}` : ""}
                       </span>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

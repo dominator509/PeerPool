@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { SUPPORTED_CHAINS, getChainInfo } from "../lib/chain.js";
+import { PROTOCOL_CHAINS } from "@workspace/protocol-config";
 import { runIndexer, getIndexerStatus } from "../lib/indexer.js";
 import { requireAuth } from "../lib/auth.js";
 
@@ -9,6 +10,7 @@ router.get("/chains", async (_req, res) => {
   res.json({
     chains: Object.keys(SUPPORTED_CHAINS),
     count: Object.keys(SUPPORTED_CHAINS).length,
+    items: PROTOCOL_CHAINS,
   });
 });
 

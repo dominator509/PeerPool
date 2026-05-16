@@ -4,11 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "db:push:local": "tsx ./src/db-push-local.ts",
     "hello": "tsx ./src/hello.ts",
+    "smoke:prod": "tsx ./src/smoke-prod.ts",
+    "smoke:prod:db": "tsx ./src/smoke-prod-db.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "tsx": "catalog:"
+    "tsx": "catalog:",
+    "viem": "^2.31.0"
   }
 }

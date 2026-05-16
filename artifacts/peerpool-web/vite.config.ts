@@ -4,13 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
+const rawPort = process.env.PORT ?? "5173";
 
 const port = Number(rawPort);
 
@@ -18,13 +12,7 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+const basePath = process.env.BASE_PATH ?? "/";
 
 export default defineConfig({
   base: basePath,
@@ -54,6 +42,57 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const normalizedId = id.replace(/\\/g, "/");
+
+          if (!normalizedId.includes("/node_modules/")) {
+            return;
+          }
+
+          if (
+            normalizedId.includes("/node_modules/react/") ||
+            normalizedId.includes("/node_modules/react-dom/") ||
+            normalizedId.includes("/node_modules/scheduler/")
+          ) {
+            return "react";
+          }
+
+          if (
+            normalizedId.includes("/node_modules/@radix-ui/") ||
+            normalizedId.includes("/node_modules/cmdk/") ||
+            normalizedId.includes("/node_modules/vaul/")
+          ) {
+            return "ui-primitives";
+          }
+
+          if (
+            normalizedId.includes("/node_modules/lucide-react/") ||
+            normalizedId.includes("/node_modules/react-icons/")
+          ) {
+            return "icons";
+          }
+
+          if (
+            normalizedId.includes("/node_modules/@tanstack/") ||
+            normalizedId.includes("/node_modules/wouter/")
+          ) {
+            return "routing-data";
+          }
+
+          if (
+            normalizedId.includes("/node_modules/react-hook-form/") ||
+            normalizedId.includes("/node_modules/zod/") ||
+            normalizedId.includes("/node_modules/date-fns/")
+          ) {
+            return "forms";
+          }
+
+          return "vendor";
+        },
+      },
+    },
   },
   server: {
     port,

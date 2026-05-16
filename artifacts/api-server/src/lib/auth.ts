@@ -10,42 +10,54 @@ import type { Request, Response, NextFunction } from "express";
 const DOMAIN_NAME = "PeerPool";
 const DOMAIN_VERSION = "1";
 
-const nonces = new Map<string, { nonce: string; expiresAt: number }>();
+interface NonceEntry {
+  nonce: string;
+  issuedAt: string;
+  expiresAt: number;
+}
+
+const nonces = new Map<string, NonceEntry>();
 
 const NONCE_TTL_MS = 5 * 60 * 1000;
 
-export function generateNonce(address: string): string {
+export function generateNonce(address: string): NonceEntry {
   const nonce = randomBytes(16).toString("hex");
-  nonces.set(address.toLowerCase(), {
+  const entry = {
     nonce,
+    issuedAt: new Date().toISOString(),
     expiresAt: Date.now() + NONCE_TTL_MS,
-  });
-  return nonce;
+  };
+  nonces.set(address.toLowerCase(), entry);
+  return entry;
 }
 
-export function getNonce(address: string): string | null {
+export function getNonce(address: string): NonceEntry | null {
   const entry = nonces.get(address.toLowerCase());
   if (!entry) return null;
   if (Date.now() > entry.expiresAt) {
     nonces.delete(address.toLowerCase());
     return null;
   }
-  return entry.nonce;
+  return entry;
 }
 
-export function consumeNonce(address: string): string | null {
-  const nonce = getNonce(address);
-  if (nonce) nonces.delete(address.toLowerCase());
-  return nonce;
+export function consumeNonce(address: string): NonceEntry | null {
+  const entry = getNonce(address);
+  if (entry) nonces.delete(address.toLowerCase());
+  return entry;
 }
 
-export function buildSignMessage(address: string, nonce: string): string {
+export function buildSignMessage(
+  address: string,
+  nonce: string,
+  issuedAt: string,
+): string {
   return [
     "Sign in to PeerPool Protocol",
     "",
     `Address: ${address}`,
     `Nonce: ${nonce}`,
-    `Issued At: ${new Date().toISOString()}`,
+    `Issued At: ${issuedAt}`,
     "",
     "This request will not trigger a blockchain transaction or cost any gas fees.",
   ].join("\n");
@@ -54,11 +66,12 @@ export function buildSignMessage(address: string, nonce: string): string {
 export async function verifySignature(params: {
   address: string;
   nonce: string;
+  issuedAt: string;
   signature: Hex;
 }): Promise<boolean> {
-  const { address, nonce, signature } = params;
+  const { address, nonce, issuedAt, signature } = params;
 
-  const message = buildSignMessage(address, nonce);
+  const message = buildSignMessage(address, nonce, issuedAt);
 
   try {
     const valid = await verifyMessage({

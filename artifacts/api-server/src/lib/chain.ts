@@ -8,9 +8,17 @@ import {
   sepolia,
   arbitrumSepolia,
 } from "viem/chains";
+import {
+  PROTOCOL_CHAIN_CONFIGS,
+  PROTOCOL_CHAIN_NAMES,
+  getDefaultTokenForChain,
+  getRpcEnvVar,
+  isProtocolChainName,
+  type ProtocolChainName,
+} from "@workspace/protocol-config";
 import { logger } from "../lib/logger.js";
 
-export const SUPPORTED_CHAINS: Record<string, Chain> = {
+const VIEM_CHAINS: Record<ProtocolChainName, Chain> = {
   ethereum: mainnet,
   arbitrum,
   optimism,
@@ -20,21 +28,28 @@ export const SUPPORTED_CHAINS: Record<string, Chain> = {
   "arbitrum-sepolia": arbitrumSepolia,
 };
 
-const RPC_OVERRIDES: Record<string, string> = {
-  ethereum: process.env.RPC_ETHEREUM ?? "",
-  arbitrum: process.env.RPC_ARBITRUM ?? "",
-  optimism: process.env.RPC_OPTIMISM ?? "",
-  polygon: process.env.RPC_POLYGON ?? "",
-  base: process.env.RPC_BASE ?? "",
-  sepolia: process.env.RPC_SEPOLIA ?? "",
-  "arbitrum-sepolia": process.env.RPC_ARBITRUM_SEPOLIA ?? "",
-};
+export const SUPPORTED_CHAINS: Record<ProtocolChainName, Chain> = PROTOCOL_CHAIN_NAMES.reduce(
+  (chains, chainName) => {
+    chains[chainName] = VIEM_CHAINS[chainName];
+    return chains;
+  },
+  {} as Record<ProtocolChainName, Chain>,
+);
+
+const RPC_OVERRIDES: Record<ProtocolChainName, string> = PROTOCOL_CHAIN_NAMES.reduce(
+  (overrides, chainName) => {
+    const envVar = getRpcEnvVar(chainName);
+    overrides[chainName] = envVar ? process.env[envVar] ?? "" : "";
+    return overrides;
+  },
+  {} as Record<ProtocolChainName, string>,
+);
 
 const clientCache: Map<string, PublicClient> = new Map();
 
 export function getChainClient(chainName: string): PublicClient | null {
+  if (!isProtocolChainName(chainName)) return null;
   const chain = SUPPORTED_CHAINS[chainName];
-  if (!chain) return null;
 
   if (clientCache.has(chainName)) {
     return clientCache.get(chainName)!;
@@ -53,8 +68,10 @@ export function getChainClient(chainName: string): PublicClient | null {
 }
 
 export async function getChainInfo(chainName: string) {
+  if (!isProtocolChainName(chainName)) return null;
   const chain = SUPPORTED_CHAINS[chainName];
-  if (!chain) return null;
+  const chainConfig = PROTOCOL_CHAIN_CONFIGS[chainName];
+  const defaultToken = getDefaultTokenForChain(chainName);
 
   const client = getChainClient(chainName);
   if (!client) return null;
@@ -63,19 +80,29 @@ export async function getChainInfo(chainName: string) {
     const blockNumber = await client.getBlockNumber();
     return {
       name: chainName,
+      label: chainConfig?.label ?? chain.name,
       chainId: chain.id,
       blockNumber: blockNumber.toString(),
       rpcConfigured: !!RPC_OVERRIDES[chainName],
-      nativeCurrency: chain.nativeCurrency,
+      nativeCurrency: chainConfig?.nativeCurrency ?? chain.nativeCurrency,
+      explorerUrl: chainConfig?.explorerUrl,
+      escrowCreationEnabled: chainConfig?.escrowCreationEnabled ?? false,
+      defaultToken,
+      tokens: chainConfig?.tokens ?? [],
     };
   } catch (err) {
     logger.warn({ chainName, err }, "Failed to get chain info");
     return {
       name: chainName,
+      label: chainConfig?.label ?? chain.name,
       chainId: chain.id,
       blockNumber: null,
       rpcConfigured: !!RPC_OVERRIDES[chainName],
-      nativeCurrency: chain.nativeCurrency,
+      nativeCurrency: chainConfig?.nativeCurrency ?? chain.nativeCurrency,
+      explorerUrl: chainConfig?.explorerUrl,
+      escrowCreationEnabled: chainConfig?.escrowCreationEnabled ?? false,
+      defaultToken,
+      tokens: chainConfig?.tokens ?? [],
     };
   }
 }
