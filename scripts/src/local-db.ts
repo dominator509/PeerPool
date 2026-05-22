@@ -38,9 +38,10 @@ export async function runCommand(
   env: NodeJS.ProcessEnv = {},
 ): Promise<void> {
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, {
+    const executable = process.platform === "win32" ? process.env.ComSpec ?? "cmd.exe" : command;
+    const commandArgs = process.platform === "win32" ? ["/d", "/s", "/c", command, ...args] : args;
+    const child = spawn(executable, commandArgs, {
       env: { ...process.env, ...env },
-      shell: process.platform === "win32",
       stdio: "inherit",
     });
 

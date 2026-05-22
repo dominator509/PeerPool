@@ -1,5 +1,7 @@
 # PeerPool
 
+[![CI](https://github.com/dominator509/PeerPool/actions/workflows/ci.yml/badge.svg)](https://github.com/dominator509/PeerPool/actions/workflows/ci.yml)
+
 PeerPool is a decentralized multi-party escrow and dispute-resolution system for EVM chains. It is built to make programmable escrow usable by people who should not need to write Solidity, JSON manifests, or raw token-unit math just to run a shared payout.
 
 The current app includes a guided manifest builder, escrow creation flow, participant roster management, dispute workflows, Merkle settlement generation, and a production-oriented API/frontend deployment path.
@@ -178,6 +180,8 @@ Key contract areas:
 - The local database is PostgreSQL 17 via Docker Compose on port `54329`.
 
 ## Current Verification Baseline
+
+GitHub Actions runs the TypeScript app build, local PostgreSQL schema push, production smoke test, and Foundry contract build/tests on pushes to `main` and pull requests.
 
 These checks have been used as the main local confidence suite:
 

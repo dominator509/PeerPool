@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: App build and smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: peerpool
+          POSTGRES_USER: peerpool
+          POSTGRES_PASSWORD: peerpool
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U peerpool -d peerpool"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+      DATABASE_URL: postgres://peerpool:peerpool@127.0.0.1:54329/peerpool
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Typecheck and build
+        run: corepack pnpm run build
+
+      - name: Push database schema
+        run: corepack pnpm run db:push:local
+
+      - name: Production smoke test
+        run: corepack pnpm run smoke:prod:db
+
+  contracts:
+    name: Contract build and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      FOUNDRY_PROFILE: ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Build contracts
+        working-directory: contracts
+        run: forge build
+
+      - name: Test contracts
+        working-directory: contracts
+        run: forge test -vvv
