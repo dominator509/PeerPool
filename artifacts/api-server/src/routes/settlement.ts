@@ -40,28 +40,30 @@ router.post("/escrows/:id/settlement", requireAuth, async (req, res) => {
 
     const { root, leaves } = buildSettlementTree(leafInputs);
 
-    for (let i = 0; i < claims.length; i++) {
-      await db
-        .update(claimsTable)
-        .set({
-          merkleRoot: root,
-          merkleProof: leaves[i].proof,
-          leafHash: leaves[i].leaf,
-        })
-        .where(eq(claimsTable.id, claims[i].id));
-    }
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < claims.length; i++) {
+        await tx
+          .update(claimsTable)
+          .set({
+            merkleRoot: root,
+            merkleProof: leaves[i].proof,
+            leafHash: leaves[i].leaf,
+          })
+          .where(eq(claimsTable.id, claims[i].id));
+      }
 
-    await db
-      .update(escrowsTable)
-      .set({ state: "settled" })
-      .where(eq(escrowsTable.id, id));
+      await tx
+        .update(escrowsTable)
+        .set({ state: "settled" })
+        .where(eq(escrowsTable.id, id));
 
-    await db.insert(activityTable).values({
-      id: randomUUID(),
-      type: "escrow_settled",
-      escrowId: id,
-      actorAddress: "system",
-      data: { merkleRoot: root, claimCount: claims.length, event: "settlement_root_posted" },
+      await tx.insert(activityTable).values({
+        id: randomUUID(),
+        type: "escrow_settled",
+        escrowId: id,
+        actorAddress: "system",
+        data: { merkleRoot: root, claimCount: claims.length, event: "settlement_root_posted" },
+      });
     });
 
     res.json({
