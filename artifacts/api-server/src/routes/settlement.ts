@@ -58,7 +58,7 @@ router.post("/escrows/:id/settlement", requireAuth, async (req, res) => {
 
     await db.insert(activityTable).values({
       id: randomUUID(),
-      type: "claim_executed",
+      type: "escrow_settled",
       escrowId: id,
       actorAddress: "system",
       data: { merkleRoot: root, claimCount: claims.length, event: "settlement_root_posted" },

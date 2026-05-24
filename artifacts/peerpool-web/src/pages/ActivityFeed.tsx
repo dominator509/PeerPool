@@ -9,6 +9,7 @@ import { Activity, LockKeyhole, FileText, Scale, Coins, Vote, AlertTriangle } fr
 const EVENT_ICONS: Record<string, React.ElementType> = {
   escrow_created: LockKeyhole,
   escrow_funded: LockKeyhole,
+  escrow_settled: Scale,
   participant_added: Activity,
   vote_submitted: Vote,
   dispute_opened: AlertTriangle,
@@ -21,6 +22,7 @@ const EVENT_ICONS: Record<string, React.ElementType> = {
 const EVENT_COLORS: Record<string, string> = {
   escrow_created: "text-indigo-400 bg-indigo-900/40 border-indigo-800/60",
   escrow_funded: "text-blue-400 bg-blue-900/40 border-blue-800/60",
+  escrow_settled: "text-emerald-400 bg-emerald-900/40 border-emerald-800/60",
   participant_added: "text-slate-400 bg-slate-800/60 border-slate-700",
   vote_submitted: "text-violet-400 bg-violet-900/40 border-violet-800/60",
   dispute_opened: "text-amber-400 bg-amber-900/40 border-amber-800/60",

@@ -1281,7 +1281,7 @@ components:
           type: string
         type:
           type: string
-          enum: [escrow_created, escrow_funded, participant_added, vote_submitted, dispute_opened, dispute_resolved, claim_created, claim_executed, manifest_registered]
+          enum: [escrow_created, escrow_funded, escrow_settled, participant_added, vote_submitted, dispute_opened, dispute_resolved, claim_created, claim_executed, manifest_registered]
         escrowId:
           type: string
         actorAddress:

@@ -719,6 +719,7 @@ export const ListActivityResponse = zod.object({
       type: zod.enum([
         "escrow_created",
         "escrow_funded",
+        "escrow_settled",
         "participant_added",
         "vote_submitted",
         "dispute_opened",

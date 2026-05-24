@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 export const activityTypeEnum = [
   "escrow_created",
   "escrow_funded",
+  "escrow_settled",
   "participant_added",
   "vote_submitted",
   "dispute_opened",

@@ -265,6 +265,7 @@ export type ActivityEventType =
 export const ActivityEventType = {
   escrow_created: "escrow_created",
   escrow_funded: "escrow_funded",
+  escrow_settled: "escrow_settled",
   participant_added: "participant_added",
   vote_submitted: "vote_submitted",
   dispute_opened: "dispute_opened",
