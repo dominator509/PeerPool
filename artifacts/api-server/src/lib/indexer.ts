@@ -4,7 +4,7 @@ import { escrowsTable, activityTable } from "@workspace/db";
 import { eq, isNotNull } from "drizzle-orm";
 import { PEERPOOL_ESCROW_ABI } from "./abis.js";
 import { logger } from "./logger.js";
-import { randomUUID } from "crypto";
+import { createHash } from "crypto";
 
 export interface ContractAddress {
   chain: string;
@@ -28,8 +28,44 @@ const status: IndexerStatus = {
   eventsProcessed: 0,
 };
 
+interface IndexerLogLike {
+  transactionHash?: string;
+  logIndex?: number | bigint;
+  blockHash?: string;
+  blockNumber?: bigint;
+  eventName?: string;
+}
+
 export function getIndexerStatus(): IndexerStatus {
   return { ...status };
+}
+
+export function buildIndexerActivityId(params: {
+  chain: string;
+  contractAddress: string;
+  escrowId: string;
+  log: IndexerLogLike;
+}): string {
+  const { chain, contractAddress, escrowId, log } = params;
+  const txHash = log.transactionHash ?? "";
+  const logIndex =
+    typeof log.logIndex === "bigint"
+      ? log.logIndex.toString()
+      : log.logIndex !== undefined
+        ? String(log.logIndex)
+        : "";
+  const blockHash = log.blockHash ?? "";
+  const blockNumber =
+    typeof log.blockNumber === "bigint" ? log.blockNumber.toString() : "";
+  const eventName = log.eventName ?? "Unknown";
+
+  if (txHash && logIndex) {
+    return `idx:${chain}:${txHash}:${logIndex}`;
+  }
+
+  const fallback = `${chain}|${contractAddress}|${escrowId}|${eventName}|${blockHash}|${blockNumber}|${logIndex}`;
+  const hash = createHash("sha256").update(fallback).digest("hex");
+  return `idx:${hash}`;
 }
 
 async function indexEscrowContract(
@@ -57,21 +93,27 @@ async function indexEscrowContract(
     for (const log of logs) {
       const eventName = (log as { eventName?: string }).eventName ?? "Unknown";
       const args = (log as { args?: Record<string, unknown> }).args ?? {};
+      const activityId = buildIndexerActivityId({
+        chain,
+        contractAddress,
+        escrowId,
+        log,
+      });
 
       logger.info({ chain, contractAddress, escrowId, eventName }, "Indexer: event detected");
 
       let activityType: string | null = null;
       let actorAddress = "0x0000000000000000000000000000000000000000";
       let data: Record<string, unknown> = {};
+      let nextEscrowState: "funded" | "disputed" | "settled" | null = null;
+      let nextFundedAmount: string | undefined;
 
       if (eventName === "EscrowFunded") {
         activityType = "escrow_funded";
         actorAddress = String(args.funder ?? actorAddress);
-        data = { amount: String(args.amount ?? "0") };
-        await db
-          .update(escrowsTable)
-          .set({ state: "funded", fundedAmount: String(args.amount ?? "0") })
-          .where(eq(escrowsTable.id, escrowId));
+        nextFundedAmount = String(args.amount ?? "0");
+        data = { amount: nextFundedAmount };
+        nextEscrowState = "funded";
       } else if (eventName === "VoteSubmitted") {
         activityType = "vote_submitted";
         actorAddress = String(args.voter ?? actorAddress);
@@ -80,20 +122,14 @@ async function indexEscrowContract(
         activityType = "dispute_opened";
         actorAddress = String(args.disputer ?? actorAddress);
         data = { bondAmount: String(args.bondAmount) };
-        await db
-          .update(escrowsTable)
-          .set({ state: "disputed" })
-          .where(eq(escrowsTable.id, escrowId));
+        nextEscrowState = "disputed";
       } else if (eventName === "Settled") {
-        activityType = "escrow_funded";
+        activityType = "escrow_settled";
         data = {
           outcomeIndex: String(args.outcomeIndex),
           merkleRoot: String(args.merkleRoot),
         };
-        await db
-          .update(escrowsTable)
-          .set({ state: "settled" })
-          .where(eq(escrowsTable.id, escrowId));
+        nextEscrowState = "settled";
       } else if (eventName === "ClaimExecuted") {
         activityType = "claim_executed";
         actorAddress = String(args.claimant ?? actorAddress);
@@ -101,15 +137,40 @@ async function indexEscrowContract(
       }
 
       if (activityType) {
-        await db.insert(activityTable).values({
-          id: randomUUID(),
-          type: activityType as never,
-          escrowId,
-          actorAddress,
-          data,
-          timestamp: new Date(),
-        }).onConflictDoNothing();
-        processed++;
+        const inserted = await db.transaction(async (tx) => {
+          const rows = await tx.insert(activityTable).values({
+            id: activityId,
+            type: activityType as never,
+            escrowId,
+            actorAddress,
+            data,
+            timestamp: new Date(),
+          }).onConflictDoNothing().returning({ id: activityTable.id });
+
+          if (!rows.length) {
+            return false;
+          }
+
+          if (nextEscrowState) {
+            const updates: {
+              state: "funded" | "disputed" | "settled";
+              fundedAmount?: string;
+            } = { state: nextEscrowState };
+            if (nextEscrowState === "funded" && nextFundedAmount !== undefined) {
+              updates.fundedAmount = nextFundedAmount;
+            }
+            await tx
+              .update(escrowsTable)
+              .set(updates)
+              .where(eq(escrowsTable.id, escrowId));
+          }
+
+          return true;
+        });
+
+        if (inserted) {
+          processed++;
+        }
       }
     }
   } catch (err) {
