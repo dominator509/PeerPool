@@ -1,0 +1,44 @@
+{
+  "phase": 4,
+  "executedAt": "2026-05-25T11:40:18.460Z",
+  "outcomes": [
+    {
+      "name": "resolve-dispute-before-create",
+      "status": 500,
+      "contentType": "application/json; charset=utf-8",
+      "bodySnippet": "{\"error\":\"Internal server error\"}"
+    },
+    {
+      "name": "escalate-dispute-before-create",
+      "status": 500,
+      "contentType": "application/json; charset=utf-8",
+      "bodySnippet": "{\"error\":\"Escalation failed\"}"
+    },
+    {
+      "name": "submit-claim-before-claim-create",
+      "status": 500,
+      "contentType": "application/json; charset=utf-8",
+      "bodySnippet": "{\"error\":\"Internal server error\"}"
+    },
+    {
+      "name": "settlement-before-escrow-create",
+      "status": 500,
+      "contentType": "application/json; charset=utf-8",
+      "bodySnippet": "{\"error\":\"Settlement computation failed\"}"
+    },
+    {
+      "name": "logout-then-reuse-token",
+      "status": 401,
+      "contentType": "application/json; charset=utf-8",
+      "bodySnippet": "{\"error\":\"Invalid or expired session\"}"
+    },
+    {
+      "name": "expired-format-token-reuse",
+      "status": 401,
+      "contentType": "application/json; charset=utf-8",
+      "bodySnippet": "{\"error\":\"Invalid or expired session\"}"
+    }
+  ],
+  "serverExitedUnexpectedly": false,
+  "stderrSnippet": ""
+}
