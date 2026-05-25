@@ -1,0 +1,671 @@
+{
+  "generatedAt": "2026-05-25T12:12:45.993Z",
+  "sources": {
+    "openApi": "lib/api-spec/openapi.yaml",
+    "contractArtifacts": "contracts/out"
+  },
+  "api": {
+    "documentedOperationCount": 37,
+    "operations": [
+      {
+        "operationId": "listActivity",
+        "method": "GET",
+        "path": "/api/activity",
+        "summary": "Recent protocol activity feed",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ActivityList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "getIndexerStatus",
+        "method": "GET",
+        "path": "/api/admin/indexer",
+        "summary": "Get on-chain indexer status",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "IndexerStatus"
+          }
+        ],
+        "authorization": "Bearer token likely required (admin route)"
+      },
+      {
+        "operationId": "triggerSync",
+        "method": "POST",
+        "path": "/api/admin/sync",
+        "summary": "Trigger on-chain event indexer run",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "SyncResult"
+          }
+        ],
+        "authorization": "Bearer token likely required (admin route)"
+      },
+      {
+        "operationId": "logout",
+        "method": "POST",
+        "path": "/api/auth/logout",
+        "summary": "Invalidate the current session",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "OkResponse"
+          }
+        ],
+        "authorization": "Bearer token required"
+      },
+      {
+        "operationId": "getAuthNonce",
+        "method": "GET",
+        "path": "/api/auth/nonce",
+        "summary": "Request a sign-in nonce for an address",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "NonceResponse"
+          },
+          {
+            "status": "400",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required (authentication bootstrap route)"
+      },
+      {
+        "operationId": "getAuthSession",
+        "method": "GET",
+        "path": "/api/auth/session",
+        "summary": "Get current session info from Bearer token",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "AuthSession"
+          },
+          {
+            "status": "401",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "Bearer token required"
+      },
+      {
+        "operationId": "verifySignature",
+        "method": "POST",
+        "path": "/api/auth/verify",
+        "summary": "Verify a wallet signature and issue a session token",
+        "requestSchema": "VerifySignatureBody",
+        "responses": [
+          {
+            "status": "200",
+            "schema": "AuthSession"
+          },
+          {
+            "status": "401",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required (authentication bootstrap route)"
+      },
+      {
+        "operationId": "listChains",
+        "method": "GET",
+        "path": "/api/chains",
+        "summary": "List supported chains",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ChainList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "getChain",
+        "method": "GET",
+        "path": "/api/chains/{name}",
+        "summary": "Get chain info and latest block",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ChainInfo"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "listDisputes",
+        "method": "GET",
+        "path": "/api/disputes",
+        "summary": "List all disputes",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "DisputeList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "createDispute",
+        "method": "POST",
+        "path": "/api/disputes",
+        "summary": "Open a dispute for an escrow",
+        "requestSchema": "CreateDisputeBody",
+        "responses": [
+          {
+            "status": "201",
+            "schema": "Dispute"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getDispute",
+        "method": "GET",
+        "path": "/api/disputes/{id}",
+        "summary": "Get dispute details",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "Dispute"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "runAiDisputeReview",
+        "method": "POST",
+        "path": "/api/disputes/{id}/ai-review",
+        "summary": "Run AI review on a dispute and generate a verdict summary",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "AiReviewResult"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "escalateDisputeToKleros",
+        "method": "POST",
+        "path": "/api/disputes/{id}/escalate",
+        "summary": "Escalate a dispute to Kleros arbitration",
+        "requestSchema": "EscalateDisputeBody",
+        "responses": [
+          {
+            "status": "200",
+            "schema": "KlerosEscalationResult"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getKlerosStatus",
+        "method": "GET",
+        "path": "/api/disputes/{id}/kleros-status",
+        "summary": "Get Kleros arbitration status for a dispute",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "KlerosStatus"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "resolveDispute",
+        "method": "POST",
+        "path": "/api/disputes/{id}/resolve",
+        "summary": "Resolve a dispute with a verdict",
+        "requestSchema": "ResolveDisputeBody",
+        "responses": [
+          {
+            "status": "200",
+            "schema": "Dispute"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getDisputeSummary",
+        "method": "GET",
+        "path": "/api/disputes/summary",
+        "summary": "Dispute resolution stats",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "DisputeSummary"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "listEscrows",
+        "method": "GET",
+        "path": "/api/escrows",
+        "summary": "List all escrows",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "EscrowList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "createEscrow",
+        "method": "POST",
+        "path": "/api/escrows",
+        "summary": "Create a new escrow",
+        "requestSchema": "CreateEscrowBody",
+        "responses": [
+          {
+            "status": "201",
+            "schema": "Escrow"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getEscrow",
+        "method": "GET",
+        "path": "/api/escrows/{id}",
+        "summary": "Get escrow details",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "Escrow"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "updateEscrow",
+        "method": "PATCH",
+        "path": "/api/escrows/{id}",
+        "summary": "Update escrow state",
+        "requestSchema": "UpdateEscrowBody",
+        "responses": [
+          {
+            "status": "200",
+            "schema": "Escrow"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "listClaims",
+        "method": "GET",
+        "path": "/api/escrows/{id}/claims",
+        "summary": "List claims for an escrow",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ClaimList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "createClaim",
+        "method": "POST",
+        "path": "/api/escrows/{id}/claims",
+        "summary": "Create a settlement claim",
+        "requestSchema": "CreateClaimBody",
+        "responses": [
+          {
+            "status": "201",
+            "schema": "Claim"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "submitClaim",
+        "method": "POST",
+        "path": "/api/escrows/{id}/claims/{claimId}/submit",
+        "summary": "Submit a claim with merkle proof",
+        "requestSchema": "SubmitClaimBody",
+        "responses": [
+          {
+            "status": "200",
+            "schema": "Claim"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "listParticipants",
+        "method": "GET",
+        "path": "/api/escrows/{id}/participants",
+        "summary": "List participants in an escrow",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ParticipantList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "addParticipant",
+        "method": "POST",
+        "path": "/api/escrows/{id}/participants",
+        "summary": "Add a participant to an escrow",
+        "requestSchema": "AddParticipantBody",
+        "responses": [
+          {
+            "status": "201",
+            "schema": "Participant"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getSettlement",
+        "method": "GET",
+        "path": "/api/escrows/{id}/settlement",
+        "summary": "Get settlement Merkle root and proofs for an escrow",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "SettlementResult"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "computeSettlement",
+        "method": "POST",
+        "path": "/api/escrows/{id}/settlement",
+        "summary": "Compute Merkle settlement root from all claims for an escrow",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "SettlementResult"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "verifySettlementProof",
+        "method": "POST",
+        "path": "/api/escrows/{id}/settlement/verify",
+        "summary": "Verify a Merkle proof for a claim allocation",
+        "requestSchema": "VerifyProofBody",
+        "responses": [
+          {
+            "status": "200",
+            "schema": "VerifyProofResult"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "listVotes",
+        "method": "GET",
+        "path": "/api/escrows/{id}/votes",
+        "summary": "List votes for an escrow",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "VoteList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "submitVote",
+        "method": "POST",
+        "path": "/api/escrows/{id}/votes",
+        "summary": "Submit a vote on an outcome",
+        "requestSchema": "SubmitVoteBody",
+        "responses": [
+          {
+            "status": "201",
+            "schema": "Vote"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getEscrowSummary",
+        "method": "GET",
+        "path": "/api/escrows/summary",
+        "summary": "Dashboard summary of escrows",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "EscrowSummary"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "healthCheck",
+        "method": "GET",
+        "path": "/api/healthz",
+        "summary": "Health check",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "HealthStatus"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "listManifests",
+        "method": "GET",
+        "path": "/api/manifests",
+        "summary": "List all manifests",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ManifestList"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "createManifest",
+        "method": "POST",
+        "path": "/api/manifests",
+        "summary": "Register a new manifest",
+        "requestSchema": "CreateManifestBody",
+        "responses": [
+          {
+            "status": "201",
+            "schema": "Manifest"
+          }
+        ],
+        "authorization": "Bearer token likely required (write route)"
+      },
+      {
+        "operationId": "getManifest",
+        "method": "GET",
+        "path": "/api/manifests/{id}",
+        "summary": "Get manifest details",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "Manifest"
+          },
+          {
+            "status": "404",
+            "schema": "ErrorResponse"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      },
+      {
+        "operationId": "getProtocolStats",
+        "method": "GET",
+        "path": "/api/stats",
+        "summary": "Global protocol statistics",
+        "requestSchema": null,
+        "responses": [
+          {
+            "status": "200",
+            "schema": "ProtocolStats"
+          }
+        ],
+        "authorization": "No auth required or optional"
+      }
+    ]
+  },
+  "contracts": {
+    "discoveredContractCount": 11,
+    "contracts": [
+      {
+        "contract": "PeerPoolEscrow",
+        "abiFile": "contracts/out/PeerPoolEscrow.sol/PeerPoolEscrow.json",
+        "externalFunctionCount": 15,
+        "readFunctionCount": 9,
+        "writeFunctionCount": 6,
+        "eventCount": 13
+      },
+      {
+        "contract": "ManifestRegistry",
+        "abiFile": "contracts/out/ManifestRegistry.sol/ManifestRegistry.json",
+        "externalFunctionCount": 6,
+        "readFunctionCount": 4,
+        "writeFunctionCount": 2,
+        "eventCount": 2
+      },
+      {
+        "contract": "FundingPool",
+        "abiFile": "contracts/out/FundingPool.sol/FundingPool.json",
+        "externalFunctionCount": 2,
+        "readFunctionCount": 2,
+        "writeFunctionCount": 0,
+        "eventCount": 5
+      },
+      {
+        "contract": "VoteModule",
+        "abiFile": "contracts/out/VoteModule.sol/VoteModule.json",
+        "externalFunctionCount": 8,
+        "readFunctionCount": 5,
+        "writeFunctionCount": 3,
+        "eventCount": 4
+      },
+      {
+        "contract": "DisputeController",
+        "abiFile": "contracts/out/DisputeController.sol/DisputeController.json",
+        "externalFunctionCount": 17,
+        "readFunctionCount": 9,
+        "writeFunctionCount": 8,
+        "eventCount": 6
+      },
+      {
+        "contract": "KlerosAdapterV1",
+        "abiFile": "contracts/out/KlerosAdapterV1.sol/KlerosAdapterV1.json",
+        "externalFunctionCount": 9,
+        "readFunctionCount": 7,
+        "writeFunctionCount": 2,
+        "eventCount": 3
+      },
+      {
+        "contract": "MerkleClaimDistributor",
+        "abiFile": "contracts/out/MerkleClaimDistributor.sol/MerkleClaimDistributor.json",
+        "externalFunctionCount": 6,
+        "readFunctionCount": 4,
+        "writeFunctionCount": 2,
+        "eventCount": 3
+      },
+      {
+        "contract": "SettlementEngine",
+        "abiFile": "contracts/out/SettlementEngine.sol/SettlementEngine.json",
+        "externalFunctionCount": 11,
+        "readFunctionCount": 8,
+        "writeFunctionCount": 3,
+        "eventCount": 3
+      },
+      {
+        "contract": "AttestationVerifier",
+        "abiFile": "contracts/out/AttestationVerifier.sol/AttestationVerifier.json",
+        "externalFunctionCount": 9,
+        "readFunctionCount": 6,
+        "writeFunctionCount": 3,
+        "eventCount": 4
+      },
+      {
+        "contract": "FeeController",
+        "abiFile": "contracts/out/FeeController.sol/FeeController.json",
+        "externalFunctionCount": 9,
+        "readFunctionCount": 5,
+        "writeFunctionCount": 4,
+        "eventCount": 4
+      },
+      {
+        "contract": "BondManager",
+        "abiFile": "contracts/out/BondManager.sol/BondManager.json",
+        "externalFunctionCount": 7,
+        "readFunctionCount": 4,
+        "writeFunctionCount": 3,
+        "eventCount": 3
+      }
+    ]
+  }
+}
