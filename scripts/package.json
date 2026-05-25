@@ -8,6 +8,7 @@
     "hello": "tsx ./src/hello.ts",
     "smoke:prod": "tsx ./src/smoke-prod.ts",
     "smoke:prod:db": "tsx ./src/smoke-prod-db.ts",
+    "test:unit": "tsx --test ./src/tests/unit/**/*.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
