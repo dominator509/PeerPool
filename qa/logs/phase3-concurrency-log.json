@@ -1,0 +1,31 @@
+{
+  "phase": 3,
+  "executedAt": "2026-05-25T11:38:53.799Z",
+  "sessionStorm": {
+    "total": 60,
+    "byStatus": {
+      "200": 8,
+      "429": 52
+    }
+  },
+  "syncStorm": {
+    "total": 30,
+    "byStatus": {
+      "200": 30
+    },
+    "sampleBodies": [
+      "{\"ok\":true,\"syncedContracts\":0,\"eventsProcessed\":0}",
+      "{\"ok\":true,\"syncedContracts\":0,\"eventsProcessed\":0}",
+      "{\"ok\":true,\"syncedContracts\":0,\"eventsProcessed\":0}"
+    ]
+  },
+  "abortedRequests": {
+    "total": 10,
+    "rejected": 10,
+    "resolved": 0
+  },
+  "indexerStatusStatusCode": 200,
+  "indexerStatusBodySnippet": "{\"running\":false,\"lastRun\":null,\"lastError\":\"Error: Failed query: select \\\"id\\\", \\\"title\\\", \\\"description\\\", \\\"state\\\", \\\"chain\\\", \\\"contract_address\\\", \\\"token\\\", \\\"total_amount\\\", \\\"funded_amount\\\",",
+  "serverExitedUnexpectedly": false,
+  "stderrSnippet": ""
+}
