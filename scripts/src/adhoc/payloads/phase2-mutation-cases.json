@@ -1,0 +1,60 @@
+[
+  {
+    "name": "nonce-invalid-address-control-chars",
+    "method": "GET",
+    "path": "/api/auth/nonce?address=0x1111111111111111111111111111111111111111%00%0a"
+  },
+  {
+    "name": "verify-missing-signature-null-fields",
+    "method": "POST",
+    "path": "/api/auth/verify",
+    "body": {
+      "address": null,
+      "signature": null,
+      "nonce": "abc"
+    }
+  },
+  {
+    "name": "verify-wrong-type-issuedAt-array",
+    "method": "POST",
+    "path": "/api/auth/verify",
+    "body": {
+      "address": "0x1111111111111111111111111111111111111111",
+      "signature": "0xdeadbeef",
+      "nonce": "abc",
+      "issuedAt": ["not-a-string"],
+      "method": "eth_signTypedData_v4"
+    }
+  },
+  {
+    "name": "settlement-verify-huge-proof-array",
+    "method": "POST",
+    "path": "/api/escrows/fake-escrow/settlement/verify",
+    "body": {
+      "claimantAddress": "0x1111111111111111111111111111111111111111",
+      "amount": "1",
+      "merkleRoot": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "proof": [
+        "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ]
+    },
+    "repeatProofTo": 5000
+  },
+  {
+    "name": "create-escrow-invalid-shape-extreme-values",
+    "method": "POST",
+    "path": "/api/escrows",
+    "headers": {
+      "Authorization": "Bearer invalidtoken"
+    },
+    "body": {
+      "title": "X",
+      "description": { "nested": { "v": [1, 2, 3] } },
+      "chain": 123,
+      "token": true,
+      "totalAmount": "99999999999999999999999999999999999999999999999999999999999999",
+      "creatorAddress": "DROP TABLE",
+      "manifestId": null
+    }
+  }
+]

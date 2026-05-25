@@ -1,0 +1,59 @@
+{
+  "phase": 2,
+  "executedAt": "2026-05-25T11:37:46.636Z",
+  "caseCount": 5,
+  "serverExitedUnexpectedly": false,
+  "stderrSnippet": "",
+  "results": [
+    {
+      "name": "nonce-invalid-address-control-chars",
+      "method": "GET",
+      "path": "/api/auth/nonce?address=0x1111111111111111111111111111111111111111%00%0a",
+      "status": 400,
+      "durationMs": 13,
+      "contentType": "application/json; charset=utf-8",
+      "responseSnippet": "{\"error\":\"Valid EVM address required\"}",
+      "stackLeakInBody": false
+    },
+    {
+      "name": "verify-missing-signature-null-fields",
+      "method": "POST",
+      "path": "/api/auth/verify",
+      "status": 400,
+      "durationMs": 14,
+      "contentType": "application/json; charset=utf-8",
+      "responseSnippet": "{\"error\":\"address, signature, and nonce are required\"}",
+      "stackLeakInBody": false
+    },
+    {
+      "name": "verify-wrong-type-issuedAt-array",
+      "method": "POST",
+      "path": "/api/auth/verify",
+      "status": 401,
+      "durationMs": 6,
+      "contentType": "application/json; charset=utf-8",
+      "responseSnippet": "{\"error\":\"Invalid or expired nonce\"}",
+      "stackLeakInBody": false
+    },
+    {
+      "name": "settlement-verify-huge-proof-array",
+      "method": "POST",
+      "path": "/api/escrows/fake-escrow/settlement/verify",
+      "status": 200,
+      "durationMs": 164,
+      "contentType": "application/json; charset=utf-8",
+      "responseSnippet": "{\"valid\":false,\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"1\",\"escrowId\":\"fake-escrow\"}",
+      "stackLeakInBody": false
+    },
+    {
+      "name": "create-escrow-invalid-shape-extreme-values",
+      "method": "POST",
+      "path": "/api/escrows",
+      "status": 401,
+      "durationMs": 5,
+      "contentType": "application/json; charset=utf-8",
+      "responseSnippet": "{\"error\":\"Invalid or expired session\"}",
+      "stackLeakInBody": false
+    }
+  ]
+}
