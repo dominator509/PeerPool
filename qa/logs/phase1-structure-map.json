@@ -1,0 +1,187 @@
+{
+  "generatedAt": "2026-05-25T12:01:48.874Z",
+  "fileCount": 24,
+  "functionCount": 96,
+  "top": [
+    {
+      "file": "artifacts/api-server/src/lib/indexer.ts",
+      "name": "indexEscrowContract",
+      "line": 71,
+      "cyclomatic": 22,
+      "branches": 21,
+      "boolOps": 8,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/settlement.ts",
+      "name": "<lambda>",
+      "line": 134,
+      "cyclomatic": 14,
+      "branches": 13,
+      "boolOps": 4,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/ai.ts",
+      "name": "<lambda>",
+      "line": 10,
+      "cyclomatic": 13,
+      "branches": 12,
+      "boolOps": 6,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/lib/chain.ts",
+      "name": "getChainInfo",
+      "line": 70,
+      "cyclomatic": 12,
+      "branches": 11,
+      "boolOps": 8,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/auth.ts",
+      "name": "<lambda>",
+      "line": 38,
+      "cyclomatic": 11,
+      "branches": 10,
+      "boolOps": 4,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/escrows.ts",
+      "name": "<lambda>",
+      "line": 141,
+      "cyclomatic": 10,
+      "branches": 9,
+      "boolOps": 1,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/lib/indexer.ts",
+      "name": "buildIndexerActivityId",
+      "line": 43,
+      "cyclomatic": 9,
+      "branches": 8,
+      "boolOps": 4,
+      "tryCatch": 0
+    },
+    {
+      "file": "artifacts/api-server/src/routes/kleros.ts",
+      "name": "<lambda>",
+      "line": 20,
+      "cyclomatic": 9,
+      "branches": 8,
+      "boolOps": 1,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/lib/errors.ts",
+      "name": "isDependencyFailure",
+      "line": 1,
+      "cyclomatic": 8,
+      "branches": 7,
+      "boolOps": 7,
+      "tryCatch": 0
+    },
+    {
+      "file": "artifacts/api-server/src/routes/votes.ts",
+      "name": "<lambda>",
+      "line": 15,
+      "cyclomatic": 8,
+      "branches": 7,
+      "boolOps": 3,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/lib/indexer.ts",
+      "name": "runIndexer",
+      "line": 183,
+      "cyclomatic": 7,
+      "branches": 6,
+      "boolOps": 0,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/disputes.ts",
+      "name": "<lambda>",
+      "line": 18,
+      "cyclomatic": 7,
+      "branches": 6,
+      "boolOps": 1,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/disputes.ts",
+      "name": "<lambda>",
+      "line": 66,
+      "cyclomatic": 7,
+      "branches": 6,
+      "boolOps": 0,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/escrows.ts",
+      "name": "<lambda>",
+      "line": 53,
+      "cyclomatic": 7,
+      "branches": 6,
+      "boolOps": 0,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/votes.ts",
+      "name": "<lambda>",
+      "line": 57,
+      "cyclomatic": 7,
+      "branches": 6,
+      "boolOps": 2,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/claims.ts",
+      "name": "<lambda>",
+      "line": 76,
+      "cyclomatic": 6,
+      "branches": 5,
+      "boolOps": 1,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/disputes.ts",
+      "name": "<lambda>",
+      "line": 180,
+      "cyclomatic": 6,
+      "branches": 5,
+      "boolOps": 1,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/kleros.ts",
+      "name": "<lambda>",
+      "line": 142,
+      "cyclomatic": 6,
+      "branches": 5,
+      "boolOps": 0,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/routes/settlement.ts",
+      "name": "<lambda>",
+      "line": 16,
+      "cyclomatic": 6,
+      "branches": 5,
+      "boolOps": 0,
+      "tryCatch": 1
+    },
+    {
+      "file": "artifacts/api-server/src/lib/indexer.ts",
+      "name": "<lambda>",
+      "line": 140,
+      "cyclomatic": 5,
+      "branches": 4,
+      "boolOps": 1,
+      "tryCatch": 0
+    }
+  ]
+}
