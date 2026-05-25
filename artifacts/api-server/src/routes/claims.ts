@@ -11,6 +11,7 @@ import {
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
+import { isDependencyFailure } from "../lib/errors.js";
 
 const router = Router();
 
@@ -30,6 +31,10 @@ router.get("/escrows/:id/claims", async (req, res) => {
     res.json({ items });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Claim dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -60,6 +65,10 @@ router.post("/escrows/:id/claims", requireAuth, async (req, res) => {
     res.status(201).json(claim);
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Claim dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -104,6 +113,10 @@ router.post("/escrows/:id/claims/:claimId/submit", requireAuth, async (req, res)
     res.json(claim);
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Claim dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

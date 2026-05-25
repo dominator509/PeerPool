@@ -4,6 +4,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { privateKeyToAccount } from "viem/accounts";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -76,6 +77,26 @@ async function readJson(response: Response): Promise<any> {
   return await response.json();
 }
 
+async function createAuthToken(baseUrl: string): Promise<string> {
+  const account = privateKeyToAccount(
+    "0x6666666666666666666666666666666666666666666666666666666666666666",
+  );
+  const nonceRes = await fetch(`${baseUrl}/api/auth/nonce?address=${account.address}`);
+  const nonceBody = await readJson(nonceRes);
+  const signature = await account.signMessage({ message: nonceBody.message });
+  const verifyRes = await fetch(`${baseUrl}/api/auth/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      address: account.address,
+      signature,
+      nonce: nonceBody.nonce,
+    }),
+  });
+  const verifyBody = await readJson(verifyRes);
+  return verifyBody.token;
+}
+
 test("health route returns strict JSON contract", async () => {
   await withServer(async (baseUrl) => {
     const res = await fetch(`${baseUrl}/api/healthz`);
@@ -122,5 +143,40 @@ test("settlement verification endpoint rejects malformed payload", async () => {
     assert.equal(res.status, 400);
     const body = await readJson(res);
     assert.match(body.error, /Missing required fields/i);
+  });
+});
+
+test("settlement verification rejects oversized proof arrays", async () => {
+  await withServer(async (baseUrl) => {
+    const res = await fetch(`${baseUrl}/api/escrows/e-1/settlement/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        claimantAddress: "0x1111111111111111111111111111111111111111",
+        amount: "1",
+        merkleRoot: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        proof: Array.from({ length: 300 }, () => "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+      }),
+    });
+    assert.equal(res.status, 413);
+    const body = await readJson(res);
+    assert.match(body.error, /Proof too large/i);
+  });
+});
+
+test("admin sync reports dependency failure instead of ok=true", async () => {
+  await withServer(async (baseUrl) => {
+    const token = await createAuthToken(baseUrl);
+    const res = await fetch(`${baseUrl}/api/admin/sync`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: "{}",
+    });
+    assert.equal(res.status, 503);
+    const body = await readJson(res);
+    assert.equal(body.ok, false);
   });
 });

@@ -3,6 +3,7 @@ import { SUPPORTED_CHAINS, getChainInfo } from "../lib/chain.js";
 import { PROTOCOL_CHAINS } from "@workspace/protocol-config";
 import { runIndexer, getIndexerStatus } from "../lib/indexer.js";
 import { requireAuth } from "../lib/auth.js";
+import { isDependencyFailure } from "../lib/errors.js";
 
 const router = Router();
 
@@ -34,10 +35,30 @@ router.get("/admin/indexer", async (_req, res) => {
 
 router.post("/admin/sync", requireAuth, async (req, res) => {
   try {
+    const preStatus = getIndexerStatus();
+    if (preStatus.running) {
+      res.status(409).json({ ok: false, error: "Indexer already running" });
+      return;
+    }
+
     const result = await runIndexer();
+    const status = getIndexerStatus();
+    if (status.lastError) {
+      res.status(503).json({
+        ok: false,
+        error: "Indexer sync failed",
+        syncedContracts: result.syncedContracts,
+        eventsProcessed: result.eventsProcessed,
+      });
+      return;
+    }
     res.json({ ok: true, ...result });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ ok: false, error: "Indexer dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Indexer run failed" });
   }
 });

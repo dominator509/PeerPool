@@ -1,30 +1,30 @@
 {
   "phase": 4,
-  "executedAt": "2026-05-25T11:40:18.460Z",
+  "executedAt": "2026-05-25T11:48:54.365Z",
   "outcomes": [
     {
       "name": "resolve-dispute-before-create",
-      "status": 500,
+      "status": 503,
       "contentType": "application/json; charset=utf-8",
-      "bodySnippet": "{\"error\":\"Internal server error\"}"
+      "bodySnippet": "{\"error\":\"Dispute dependency unavailable\"}"
     },
     {
       "name": "escalate-dispute-before-create",
-      "status": 500,
+      "status": 503,
       "contentType": "application/json; charset=utf-8",
-      "bodySnippet": "{\"error\":\"Escalation failed\"}"
+      "bodySnippet": "{\"error\":\"Escalation dependency unavailable\"}"
     },
     {
       "name": "submit-claim-before-claim-create",
-      "status": 500,
+      "status": 503,
       "contentType": "application/json; charset=utf-8",
-      "bodySnippet": "{\"error\":\"Internal server error\"}"
+      "bodySnippet": "{\"error\":\"Claim dependency unavailable\"}"
     },
     {
       "name": "settlement-before-escrow-create",
-      "status": 500,
+      "status": 503,
       "contentType": "application/json; charset=utf-8",
-      "bodySnippet": "{\"error\":\"Settlement computation failed\"}"
+      "bodySnippet": "{\"error\":\"Settlement dependency unavailable\"}"
     },
     {
       "name": "logout-then-reuse-token",

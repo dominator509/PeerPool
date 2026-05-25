@@ -1,6 +1,6 @@
 {
   "phase": 3,
-  "executedAt": "2026-05-25T11:38:53.799Z",
+  "executedAt": "2026-05-25T11:48:54.445Z",
   "sessionStorm": {
     "total": 60,
     "byStatus": {
@@ -11,12 +11,13 @@
   "syncStorm": {
     "total": 30,
     "byStatus": {
-      "200": 30
+      "409": 29,
+      "503": 1
     },
     "sampleBodies": [
-      "{\"ok\":true,\"syncedContracts\":0,\"eventsProcessed\":0}",
-      "{\"ok\":true,\"syncedContracts\":0,\"eventsProcessed\":0}",
-      "{\"ok\":true,\"syncedContracts\":0,\"eventsProcessed\":0}"
+      "{\"ok\":false,\"error\":\"Indexer sync failed\",\"syncedContracts\":0,\"eventsProcessed\":0}",
+      "{\"ok\":false,\"error\":\"Indexer already running\"}",
+      "{\"ok\":false,\"error\":\"Indexer already running\"}"
     ]
   },
   "abortedRequests": {

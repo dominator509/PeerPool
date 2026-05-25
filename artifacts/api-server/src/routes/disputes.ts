@@ -11,6 +11,7 @@ import {
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
+import { isDependencyFailure } from "../lib/errors.js";
 
 const router = Router();
 
@@ -54,6 +55,10 @@ router.get("/disputes/summary", async (req, res) => {
     });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Dispute dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -87,6 +92,10 @@ router.get("/disputes", async (req, res) => {
     res.json({ items, total: Number(cnt) });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Dispute dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -131,6 +140,10 @@ router.post("/disputes", requireAuth, async (req, res) => {
     res.status(201).json(dispute);
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Dispute dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -156,6 +169,10 @@ router.get("/disputes/:id", async (req, res) => {
     res.json(dispute);
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Dispute dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -201,6 +218,10 @@ router.post("/disputes/:id/resolve", requireAuth, async (req, res) => {
     res.json(dispute);
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Dispute dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

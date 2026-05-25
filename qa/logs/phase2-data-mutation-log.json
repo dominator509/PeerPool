@@ -1,6 +1,6 @@
 {
   "phase": 2,
-  "executedAt": "2026-05-25T11:37:46.636Z",
+  "executedAt": "2026-05-25T11:47:21.612Z",
   "caseCount": 5,
   "serverExitedUnexpectedly": false,
   "stderrSnippet": "",
@@ -10,7 +10,7 @@
       "method": "GET",
       "path": "/api/auth/nonce?address=0x1111111111111111111111111111111111111111%00%0a",
       "status": 400,
-      "durationMs": 13,
+      "durationMs": 16,
       "contentType": "application/json; charset=utf-8",
       "responseSnippet": "{\"error\":\"Valid EVM address required\"}",
       "stackLeakInBody": false
@@ -20,7 +20,7 @@
       "method": "POST",
       "path": "/api/auth/verify",
       "status": 400,
-      "durationMs": 14,
+      "durationMs": 18,
       "contentType": "application/json; charset=utf-8",
       "responseSnippet": "{\"error\":\"address, signature, and nonce are required\"}",
       "stackLeakInBody": false
@@ -30,7 +30,7 @@
       "method": "POST",
       "path": "/api/auth/verify",
       "status": 401,
-      "durationMs": 6,
+      "durationMs": 10,
       "contentType": "application/json; charset=utf-8",
       "responseSnippet": "{\"error\":\"Invalid or expired nonce\"}",
       "stackLeakInBody": false
@@ -39,10 +39,10 @@
       "name": "settlement-verify-huge-proof-array",
       "method": "POST",
       "path": "/api/escrows/fake-escrow/settlement/verify",
-      "status": 200,
-      "durationMs": 164,
+      "status": 413,
+      "durationMs": 12,
       "contentType": "application/json; charset=utf-8",
-      "responseSnippet": "{\"valid\":false,\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"1\",\"escrowId\":\"fake-escrow\"}",
+      "responseSnippet": "{\"error\":\"Proof too large: max 256 items\"}",
       "stackLeakInBody": false
     },
     {

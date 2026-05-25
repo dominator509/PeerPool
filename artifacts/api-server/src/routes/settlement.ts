@@ -5,8 +5,13 @@ import { eq } from "drizzle-orm";
 import { buildSettlementTree, verifyProof } from "../lib/merkle.js";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
+import { isDependencyFailure } from "../lib/errors.js";
 
 const router = Router();
+const MAX_PROOF_ITEMS = 256;
+const HEX_32_REGEX = /^0x[0-9a-fA-F]{64}$/;
+const ADDRESS_REGEX = /^0x[0-9a-fA-F]{40}$/;
+const UINT_REGEX = /^(0|[1-9][0-9]{0,77})$/;
 
 router.post("/escrows/:id/settlement", requireAuth, async (req, res) => {
   try {
@@ -79,6 +84,10 @@ router.post("/escrows/:id/settlement", requireAuth, async (req, res) => {
     });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Settlement dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Settlement computation failed" });
   }
 });
@@ -114,6 +123,10 @@ router.get("/escrows/:id/settlement", async (req, res) => {
     });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Settlement dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -132,12 +145,40 @@ router.post("/escrows/:id/settlement/verify", async (req, res) => {
       res.status(400).json({ error: "Missing required fields: claimantAddress, amount, proof, merkleRoot" });
       return;
     }
+    if (!ADDRESS_REGEX.test(claimantAddress)) {
+      res.status(400).json({ error: "Invalid claimantAddress format" });
+      return;
+    }
+    if (!UINT_REGEX.test(amount)) {
+      res.status(400).json({ error: "Invalid amount format" });
+      return;
+    }
+    if (!HEX_32_REGEX.test(merkleRoot)) {
+      res.status(400).json({ error: "Invalid merkleRoot format" });
+      return;
+    }
+    if (!Array.isArray(proof)) {
+      res.status(400).json({ error: "Proof must be an array" });
+      return;
+    }
+    if (proof.length > MAX_PROOF_ITEMS) {
+      res.status(413).json({ error: `Proof too large: max ${MAX_PROOF_ITEMS} items` });
+      return;
+    }
+    if (!proof.every((item) => typeof item === "string" && HEX_32_REGEX.test(item))) {
+      res.status(400).json({ error: "Invalid proof item format" });
+      return;
+    }
 
     const valid = verifyProof(merkleRoot, claimantAddress, amount, id, proof);
 
     res.json({ valid, claimantAddress, amount, escrowId: id });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Settlement dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Verification failed" });
   }
 });

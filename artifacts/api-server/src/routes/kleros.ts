@@ -6,6 +6,7 @@ import { getChainClient } from "../lib/chain.js";
 import { KLEROS_ADAPTER_ABI } from "../lib/abis.js";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
+import { isDependencyFailure } from "../lib/errors.js";
 
 const router = Router();
 
@@ -130,6 +131,10 @@ router.post("/disputes/:id/escalate", requireAuth, async (req, res) => {
     });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Escalation dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Escalation failed" });
   }
 });
@@ -171,6 +176,10 @@ router.get("/disputes/:id/kleros-status", async (req, res) => {
     });
   } catch (err) {
     req.log.error(err);
+    if (isDependencyFailure(err)) {
+      res.status(503).json({ error: "Escalation dependency unavailable" });
+      return;
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });
