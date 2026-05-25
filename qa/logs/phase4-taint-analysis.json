@@ -1,0 +1,138 @@
+{
+  "generatedAt": "2026-05-25T12:11:59.899Z",
+  "findingCount": 22,
+  "findings": [
+    {
+      "file": "artifacts/api-server/src/routes/ai.ts",
+      "source": "req.params",
+      "sink": "getAnthropicClient()",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/claims.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/claims.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/disputes.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/disputes.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/disputes.ts",
+      "source": "req.query",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/escrows.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/escrows.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/escrows.ts",
+      "source": "req.query",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/kleros.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/kleros.ts",
+      "source": "req.body",
+      "sink": "client.readContract(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/kleros.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/kleros.ts",
+      "source": "req.params",
+      "sink": "client.readContract(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/manifests.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/manifests.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/manifests.ts",
+      "source": "req.query",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/participants.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/participants.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/settlement.ts",
+      "source": "req.body",
+      "sink": "db.transaction(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/settlement.ts",
+      "source": "req.params",
+      "sink": "db.transaction(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/votes.ts",
+      "source": "req.body",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    },
+    {
+      "file": "artifacts/api-server/src/routes/votes.ts",
+      "source": "req.params",
+      "sink": "db.insert(",
+      "note": "Potential taint path requiring validation/error-boundary tests"
+    }
+  ]
+}
