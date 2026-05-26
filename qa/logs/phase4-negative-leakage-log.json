@@ -1,0 +1,150 @@
+{
+  "phase": 4,
+  "generatedAt": "2026-05-26T00:08:46.935Z",
+  "durationMs": 203,
+  "totals": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1,
+    "criticalLeaks": 0
+  },
+  "results": [
+    {
+      "id": "p4.malformed.auth-verify-invalid-json",
+      "category": "malformed",
+      "method": "POST",
+      "endpoint": "/api/auth/verify",
+      "expectedStatuses": [
+        400,
+        415,
+        422
+      ],
+      "actualStatus": 400,
+      "outcome": "fail",
+      "durationMs": 5,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Status/leakage/assertion failure (No extra validation required)",
+      "responseSample": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Bad Request</pre>\n</body>\n</html>\n"
+    },
+    {
+      "id": "p4.contenttype.manifest-text-plain",
+      "category": "content-type",
+      "method": "POST",
+      "endpoint": "/api/manifests",
+      "expectedStatuses": [
+        400,
+        415,
+        422
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 4,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Invalid body\"}"
+    },
+    {
+      "id": "p4.auth.admin-sync-invalid-token",
+      "category": "auth",
+      "method": "POST",
+      "endpoint": "/api/admin/sync",
+      "expectedStatuses": [
+        401,
+        403
+      ],
+      "actualStatus": 401,
+      "outcome": "pass",
+      "durationMs": 3,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Invalid or expired session\"}"
+    },
+    {
+      "id": "p4.auth.create-escrow-missing-token",
+      "category": "auth",
+      "method": "POST",
+      "endpoint": "/api/escrows",
+      "expectedStatuses": [
+        401,
+        403
+      ],
+      "actualStatus": 401,
+      "outcome": "pass",
+      "durationMs": 3,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Authentication required\"}"
+    },
+    {
+      "id": "p4.sequence.submit-claim-out-of-order",
+      "category": "sequence",
+      "method": "POST",
+      "endpoint": "/api/escrows/non-existent/claims/non-existent/submit",
+      "expectedStatuses": [
+        400,
+        404
+      ],
+      "actualStatus": 404,
+      "outcome": "pass",
+      "durationMs": 38,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Claim not found\"}"
+    },
+    {
+      "id": "p4.sequence.resolve-dispute-out-of-order",
+      "category": "sequence",
+      "method": "POST",
+      "endpoint": "/api/disputes/non-existent/resolve",
+      "expectedStatuses": [
+        400,
+        404
+      ],
+      "actualStatus": 404,
+      "outcome": "pass",
+      "durationMs": 12,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Dispute not found\"}"
+    },
+    {
+      "id": "p4.malformed.settlement-verify-bad-shape",
+      "category": "malformed",
+      "method": "POST",
+      "endpoint": "/api/escrows/escrow-x/settlement/verify",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 3,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Invalid merkleRoot format\"}"
+    },
+    {
+      "id": "p4.fuzz.query-state-sqli-pattern",
+      "category": "fuzz",
+      "method": "GET",
+      "endpoint": "/api/escrows?state=' OR 1=1--",
+      "expectedStatuses": [
+        200,
+        400
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 3,
+      "leakDetected": false,
+      "leakSignals": [],
+      "assertion": "Rejected safely with no sensitive leakage",
+      "responseSample": "{\"error\":\"Invalid query params\"}"
+    }
+  ]
+}
