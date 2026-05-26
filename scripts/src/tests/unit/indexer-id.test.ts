@@ -2,10 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 test("buildIndexerActivityId is deterministic and unique by tx/log index", async () => {
-  process.env.DATABASE_URL ??= "postgres://peerpool:peerpool@127.0.0.1:1/peerpool";
-
   const { buildIndexerActivityId } = await import(
-    "../../../../artifacts/api-server/src/lib/indexer.js"
+    "../../../../artifacts/api-server/src/lib/indexer-activity-id.js"
   );
 
   const base = {
@@ -33,9 +31,8 @@ test("buildIndexerActivityId is deterministic and unique by tx/log index", async
 });
 
 test("buildIndexerActivityId fallback path hashes non-tx identifiers", async () => {
-  process.env.DATABASE_URL ??= "postgres://peerpool:peerpool@127.0.0.1:1/peerpool";
   const { buildIndexerActivityId } = await import(
-    "../../../../artifacts/api-server/src/lib/indexer.js"
+    "../../../../artifacts/api-server/src/lib/indexer-activity-id.js"
   );
 
   const id = buildIndexerActivityId({

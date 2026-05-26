@@ -3,7 +3,6 @@ import { db } from "@workspace/db";
 import { disputesTable, activityTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { getChainClient } from "../lib/chain.js";
-import { KLEROS_ADAPTER_ABI } from "../lib/abis.js";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
 import { isDependencyFailure } from "../lib/errors.js";
@@ -106,13 +105,6 @@ router.post("/disputes/:id/escalate", requireAuth, async (req, res) => {
       });
       return;
     }
-
-    const klerosId = await client.readContract({
-      address: adapterAddress,
-      abi: KLEROS_ADAPTER_ABI,
-      functionName: "disputes",
-      args: [BigInt(0)],
-    });
 
     const klerosDisputeIdStr = String(Date.now());
 

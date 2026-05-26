@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-25T12:11:59.899Z",
-  "findingCount": 22,
+  "generatedAt": "2026-05-26T00:13:28.298Z",
+  "findingCount": 20,
   "findings": [
     {
       "file": "artifacts/api-server/src/routes/ai.ts",
@@ -64,20 +64,8 @@
     },
     {
       "file": "artifacts/api-server/src/routes/kleros.ts",
-      "source": "req.body",
-      "sink": "client.readContract(",
-      "note": "Potential taint path requiring validation/error-boundary tests"
-    },
-    {
-      "file": "artifacts/api-server/src/routes/kleros.ts",
       "source": "req.params",
       "sink": "db.insert(",
-      "note": "Potential taint path requiring validation/error-boundary tests"
-    },
-    {
-      "file": "artifacts/api-server/src/routes/kleros.ts",
-      "source": "req.params",
-      "sink": "client.readContract(",
       "note": "Potential taint path requiring validation/error-boundary tests"
     },
     {

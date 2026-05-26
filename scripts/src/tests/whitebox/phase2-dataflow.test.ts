@@ -84,11 +84,9 @@ test("buildLeaf supports extreme-but-valid numeric string", () => {
 });
 
 test("buildIndexerActivityId data flow prefers tx/log index and falls back to hash", async () => {
-  process.env.DATABASE_URL ??= "postgres://peerpool:peerpool@127.0.0.1:1/peerpool";
   const { buildIndexerActivityId } = await import(
-    "../../../../artifacts/api-server/src/lib/indexer.js"
+    "../../../../artifacts/api-server/src/lib/indexer-activity-id.js"
   );
-  const { pool } = await import("../../../../lib/db/src/index.js");
   const txKey = buildIndexerActivityId({
     chain: "ethereum",
     contractAddress: "0x0000000000000000000000000000000000000001",
@@ -104,7 +102,6 @@ test("buildIndexerActivityId data flow prefers tx/log index and falls back to ha
     log: { eventName: "EscrowFunded", blockHash: "0x123", blockNumber: 99n },
   });
   assert.match(fallback, /^idx:[0-9a-f]{64}$/);
-  await pool.end();
 });
 
 test("dependency classifier flags expected transport/db signatures", () => {
