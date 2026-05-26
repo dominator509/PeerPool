@@ -1,7 +1,7 @@
 {
   "phase": 3,
-  "generatedAt": "2026-05-26T00:06:55.243Z",
-  "durationMs": 326,
+  "generatedAt": "2026-05-26T00:09:45.351Z",
+  "durationMs": 411,
   "totals": {
     "total": 14,
     "passed": 14,
@@ -21,7 +21,7 @@
       "outcome": "pass",
       "durationMs": 3,
       "assertion": "Session address matches authenticated wallet",
-      "responseSample": "{\"address\":\"0x7564105e977516c53be337314c7e53838967bdac\",\"issuedAt\":1779754015053,\"valid\":true}"
+      "responseSample": "{\"address\":\"0x7564105e977516c53be337314c7e53838967bdac\",\"issuedAt\":1779754185138,\"valid\":true}"
     },
     {
       "id": "p3.workflow.create-manifest",
@@ -33,9 +33,9 @@
       ],
       "actualStatus": 201,
       "outcome": "pass",
-      "durationMs": 48,
+      "durationMs": 46,
       "assertion": "Manifest created with stable id",
-      "responseSample": "{\"id\":\"ae6a777f-8dca-4a5f-a161-c2cb2da9c084\",\"title\":\"StateFlow Manifest 1779754015047\",\"description\":\"State transition verification manifest\",\"conditions\":[\"Deliverable accepted by majority reviewers\"],\"outcomes\":[{\"index\":0,\"label\":\"Approved\",\"description\":\"Release 100%\",\"distributionBps\":10000},{\"index\":1,\"label\":\"R...<truncated:186>"
+      "responseSample": "{\"id\":\"547a7452-28fe-4e04-986e-86599e66c5ed\",\"title\":\"StateFlow Manifest 1779754185134\",\"description\":\"State transition verification manifest\",\"conditions\":[\"Deliverable accepted by majority reviewers\"],\"outcomes\":[{\"index\":0,\"label\":\"Approved\",\"description\":\"Release 100%\",\"distributionBps\":10000},{\"index\":1,\"label\":\"R...<truncated:186>"
     },
     {
       "id": "p3.workflow.create-escrow",
@@ -47,9 +47,9 @@
       ],
       "actualStatus": 201,
       "outcome": "pass",
-      "durationMs": 22,
+      "durationMs": 25,
       "assertion": "Escrow persisted with referenced manifestId",
-      "responseSample": "{\"id\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"title\":\"StateFlow Escrow 1779754015047\",\"description\":\"Workflow continuity escrow\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"120\",\"fundedAmount\":\"0\",\"creatorAddress\":\"0x7564105e977516c53be...<truncated:181>"
+      "responseSample": "{\"id\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"title\":\"StateFlow Escrow 1779754185134\",\"description\":\"Workflow continuity escrow\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"120\",\"fundedAmount\":\"0\",\"creatorAddress\":\"0x7564105e977516c53be...<truncated:181>"
     },
     {
       "id": "p3.workflow.get-escrow",
@@ -63,7 +63,7 @@
       "outcome": "pass",
       "durationMs": 9,
       "assertion": "Escrow id stable across fetch",
-      "responseSample": "{\"id\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"title\":\"StateFlow Escrow 1779754015047\",\"description\":\"Workflow continuity escrow\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"120\",\"fundedAmount\":\"0\",\"creatorAddress\":\"0x7564105e977516c53be...<truncated:181>"
+      "responseSample": "{\"id\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"title\":\"StateFlow Escrow 1779754185134\",\"description\":\"Workflow continuity escrow\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"120\",\"fundedAmount\":\"0\",\"creatorAddress\":\"0x7564105e977516c53be...<truncated:181>"
     },
     {
       "id": "p3.workflow.list-escrows",
@@ -75,9 +75,9 @@
       ],
       "actualStatus": 200,
       "outcome": "pass",
-      "durationMs": 20,
+      "durationMs": 22,
       "assertion": "Created escrow surfaced in list",
-      "responseSample": "{\"items\":[{\"id\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"title\":\"StateFlow Escrow 1779754015047\",\"description\":\"Workflow continuity escrow\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"120\",\"fundedAmount\":\"0\",\"creatorAddress\":\"0x7564105e9...<truncated:4697>"
+      "responseSample": "{\"items\":[{\"id\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"title\":\"StateFlow Escrow 1779754185134\",\"description\":\"Workflow continuity escrow\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"120\",\"fundedAmount\":\"0\",\"creatorAddress\":\"0x7564105e9...<truncated:6206>"
     },
     {
       "id": "p3.workflow.add-participant",
@@ -89,9 +89,9 @@
       ],
       "actualStatus": 201,
       "outcome": "pass",
-      "durationMs": 19,
+      "durationMs": 22,
       "assertion": "Participant added with expected address",
-      "responseSample": "{\"id\":\"5e4fb4ff-5001-4e87-a6d8-3f4788b661c4\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"address\":\"0x1111111111111111111111111111111111111111\",\"role\":\"beneficiary\",\"fundedAmount\":\"0\",\"joinedAt\":\"2026-05-26T00:06:55.615Z\"}"
+      "responseSample": "{\"id\":\"21b1786c-2e26-4e86-94e2-27a3e0415613\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"address\":\"0x1111111111111111111111111111111111111111\",\"role\":\"beneficiary\",\"fundedAmount\":\"0\",\"joinedAt\":\"2026-05-26T00:09:45.492Z\"}"
     },
     {
       "id": "p3.workflow.list-participants",
@@ -103,9 +103,9 @@
       ],
       "actualStatus": 200,
       "outcome": "pass",
-      "durationMs": 6,
+      "durationMs": 7,
       "assertion": "Participant present in list response",
-      "responseSample": "{\"items\":[{\"id\":\"5e4fb4ff-5001-4e87-a6d8-3f4788b661c4\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"address\":\"0x1111111111111111111111111111111111111111\",\"role\":\"beneficiary\",\"fundedAmount\":\"0\",\"joinedAt\":\"2026-05-26T00:06:55.615Z\"}]}"
+      "responseSample": "{\"items\":[{\"id\":\"21b1786c-2e26-4e86-94e2-27a3e0415613\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"address\":\"0x1111111111111111111111111111111111111111\",\"role\":\"beneficiary\",\"fundedAmount\":\"0\",\"joinedAt\":\"2026-05-26T00:09:45.492Z\"}]}"
     },
     {
       "id": "p3.workflow.submit-vote",
@@ -117,9 +117,9 @@
       ],
       "actualStatus": 201,
       "outcome": "pass",
-      "durationMs": 20,
+      "durationMs": 21,
       "assertion": "Vote linked to expected escrow and outcome",
-      "responseSample": "{\"id\":\"ce718ee5-d67a-4442-b88c-954a69f70b3e\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"voterAddress\":\"0x1111111111111111111111111111111111111111\",\"outcomeIndex\":0,\"outcomeLabel\":\"Approved\",\"weight\":\"1\",\"signature\":null,\"votedAt\":\"2026-05-26T00:06:55.648Z\"}"
+      "responseSample": "{\"id\":\"7bee0a49-d5b3-46ef-8eff-6f823ec47f74\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"voterAddress\":\"0x1111111111111111111111111111111111111111\",\"outcomeIndex\":0,\"outcomeLabel\":\"Approved\",\"weight\":\"1\",\"signature\":null,\"votedAt\":\"2026-05-26T00:09:45.530Z\"}"
     },
     {
       "id": "p3.workflow.list-votes",
@@ -131,9 +131,9 @@
       ],
       "actualStatus": 200,
       "outcome": "pass",
-      "durationMs": 6,
+      "durationMs": 7,
       "assertion": "Vote and tally persisted across read path",
-      "responseSample": "{\"items\":[{\"id\":\"ce718ee5-d67a-4442-b88c-954a69f70b3e\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"voterAddress\":\"0x1111111111111111111111111111111111111111\",\"outcomeIndex\":0,\"outcomeLabel\":\"Approved\",\"weight\":\"1\",\"signature\":null,\"votedAt\":\"2026-05-26T00:06:55.648Z\"}],\"tally\":[{\"outcomeIndex\":0,\"outcomeLabel\":\"...<truncated:44>"
+      "responseSample": "{\"items\":[{\"id\":\"7bee0a49-d5b3-46ef-8eff-6f823ec47f74\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"voterAddress\":\"0x1111111111111111111111111111111111111111\",\"outcomeIndex\":0,\"outcomeLabel\":\"Approved\",\"weight\":\"1\",\"signature\":null,\"votedAt\":\"2026-05-26T00:09:45.530Z\"}],\"tally\":[{\"outcomeIndex\":0,\"outcomeLabel\":\"...<truncated:44>"
     },
     {
       "id": "p3.workflow.create-claim",
@@ -145,9 +145,9 @@
       ],
       "actualStatus": 201,
       "outcome": "pass",
-      "durationMs": 10,
+      "durationMs": 20,
       "assertion": "Claim created with expected escrow and amount",
-      "responseSample": "{\"id\":\"ef90875f-64e3-4f26-8ee5-bf92f8b9a0bc\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"merkleRoot\":null,\"merkleProof\":null,\"leafHash\":null,\"state\":\"pending\",\"createdAt\":\"2026-05-26T00:06:55.669Z\",\"submittedAt\":null,\"executedAt\":null}"
+      "responseSample": "{\"id\":\"00a542f7-8803-4194-833d-b61cc941cbcd\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"merkleRoot\":null,\"merkleProof\":null,\"leafHash\":null,\"state\":\"pending\",\"createdAt\":\"2026-05-26T00:09:45.555Z\",\"submittedAt\":null,\"executedAt\":null}"
     },
     {
       "id": "p3.workflow.list-claims",
@@ -159,9 +159,9 @@
       ],
       "actualStatus": 200,
       "outcome": "pass",
-      "durationMs": 4,
+      "durationMs": 5,
       "assertion": "Claim visible via list endpoint",
-      "responseSample": "{\"items\":[{\"id\":\"ef90875f-64e3-4f26-8ee5-bf92f8b9a0bc\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"merkleRoot\":null,\"merkleProof\":null,\"leafHash\":null,\"state\":\"pending\",\"createdAt\":\"2026-05-26T00:06:55.669Z\",\"submittedAt\":null,\"executed...<truncated:11>"
+      "responseSample": "{\"items\":[{\"id\":\"00a542f7-8803-4194-833d-b61cc941cbcd\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"merkleRoot\":null,\"merkleProof\":null,\"leafHash\":null,\"state\":\"pending\",\"createdAt\":\"2026-05-26T00:09:45.555Z\",\"submittedAt\":null,\"executed...<truncated:11>"
     },
     {
       "id": "p3.workflow.compute-settlement",
@@ -173,9 +173,9 @@
       ],
       "actualStatus": 200,
       "outcome": "pass",
-      "durationMs": 19,
+      "durationMs": 20,
       "assertion": "Settlement computed with at least one claim leaf",
-      "responseSample": "{\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"merkleRoot\":\"0x9270f0258f601bb005deae2d48dfc10157e31c90b92766674beea4fc580dafe1\",\"claimCount\":1,\"leaves\":[{\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"leafHash\":\"0x9270f0258f601bb005deae2d48dfc10157e31c90b92766674beea4fc580dafe1\",\"pro...<truncated:9>"
+      "responseSample": "{\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"merkleRoot\":\"0xcbbfd8c327387bddad68809ecd2a7db578541a95164e37adacf3d797c6568304\",\"claimCount\":1,\"leaves\":[{\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"leafHash\":\"0xcbbfd8c327387bddad68809ecd2a7db578541a95164e37adacf3d797c6568304\",\"pro...<truncated:9>"
     },
     {
       "id": "p3.workflow.get-settlement",
@@ -187,9 +187,9 @@
       ],
       "actualStatus": 200,
       "outcome": "pass",
-      "durationMs": 5,
+      "durationMs": 4,
       "assertion": "Settlement root stable across compute->read workflow",
-      "responseSample": "{\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\",\"merkleRoot\":\"0x9270f0258f601bb005deae2d48dfc10157e31c90b92766674beea4fc580dafe1\",\"claimCount\":1,\"leaves\":[{\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"leafHash\":\"0x9270f0258f601bb005deae2d48dfc10157e31c90b92766674beea4fc580dafe1\",\"pro...<truncated:27>"
+      "responseSample": "{\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\",\"merkleRoot\":\"0xcbbfd8c327387bddad68809ecd2a7db578541a95164e37adacf3d797c6568304\",\"claimCount\":1,\"leaves\":[{\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"leafHash\":\"0xcbbfd8c327387bddad68809ecd2a7db578541a95164e37adacf3d797c6568304\",\"pro...<truncated:27>"
     },
     {
       "id": "p3.workflow.verify-proof",
@@ -203,7 +203,7 @@
       "outcome": "pass",
       "durationMs": 4,
       "assertion": "Proof verified against current settlement root",
-      "responseSample": "{\"valid\":true,\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"escrowId\":\"d74ea65f-61aa-48d9-9258-4416bd49b132\"}"
+      "responseSample": "{\"valid\":true,\"claimantAddress\":\"0x1111111111111111111111111111111111111111\",\"amount\":\"40\",\"escrowId\":\"937e2194-7398-4968-9448-968cb7a97eab\"}"
     }
   ]
 }
