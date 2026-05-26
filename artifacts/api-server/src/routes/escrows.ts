@@ -11,6 +11,7 @@ import {
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
+import { isUnsignedIntegerString } from "../lib/validation.js";
 
 const router = Router();
 
@@ -89,6 +90,10 @@ router.post("/escrows", requireAuth, async (req, res) => {
     const body = CreateEscrowBody.safeParse(req.body);
     if (!body.success) {
       res.status(400).json({ error: "Invalid body" });
+      return;
+    }
+    if (!isUnsignedIntegerString(body.data.totalAmount)) {
+      res.status(400).json({ error: "Invalid totalAmount format" });
       return;
     }
 

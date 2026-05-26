@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-05-26T00:10:53.020Z",
+  "generatedAt": "2026-05-26T00:15:27.983Z",
   "documentedOperationCount": 37,
   "attemptedOperationCount": 19,
-  "successfulOperationCount": 18,
+  "successfulOperationCount": 19,
   "attemptedCoveragePct": 51.35,
-  "successfulCoveragePct": 48.65,
+  "successfulCoveragePct": 51.35,
   "untestedDocumentedOperations": [
     "GET /api/activity",
     "GET /api/admin/indexer",
@@ -25,51 +25,16 @@
     "GET /api/manifests/{id}",
     "GET /api/stats"
   ],
-  "attemptedButNotSuccessfulOperations": [
-    "POST /api/auth/verify"
-  ],
+  "attemptedButNotSuccessfulOperations": [],
   "unmatchedObservedResults": [],
   "unhandledExternalExceptions": [],
-  "deviations": [
-    {
-      "id": "p2.escrow.invalid-negative-total",
-      "method": "POST",
-      "endpoint": "/api/escrows",
-      "actualStatus": 201,
-      "assertion": "Error payload missing",
-      "responseSample": "{\"id\":\"545939b5-1f17-4019-b98c-b159166f50c9\",\"title\":\"Invalid Negative Amount Escrow\",\"description\":\"Should reject negative totals\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"-1\",\"fundedAmount\":\"0\",\"creatorAddress\":...<truncated:203>"
-    },
-    {
-      "id": "p2.vote.invalid-negative-outcome",
-      "method": "POST",
-      "endpoint": "/api/escrows/{id}/votes",
-      "actualStatus": 201,
-      "assertion": "Error payload missing",
-      "responseSample": "{\"id\":\"b9601d6e-2151-4e04-9bbf-a7fdaddb42a1\",\"escrowId\":\"f1cf9f09-0a7f-48fe-82c7-d6db8115e9e3\",\"voterAddress\":\"0x2222222222222222222222222222222222222222\",\"outcomeIndex\":-1,\"outcomeLabel\":null,\"weight\":\"1\",\"signature\":null,\"votedAt\":\"2026-05-26T00:09:45.401Z\"}"
-    },
-    {
-      "id": "p2.claim.invalid-negative-amount",
-      "method": "POST",
-      "endpoint": "/api/escrows/{id}/claims",
-      "actualStatus": 201,
-      "assertion": "Error payload missing",
-      "responseSample": "{\"id\":\"66b46ea5-06d0-422b-987d-a5992f56f8c8\",\"escrowId\":\"f1cf9f09-0a7f-48fe-82c7-d6db8115e9e3\",\"claimantAddress\":\"0x3333333333333333333333333333333333333333\",\"amount\":\"-5\",\"merkleRoot\":null,\"merkleProof\":null,\"leafHash\":null,\"state\":\"pending\",\"createdAt\":\"2026-05-26T00:09:45.419Z\",\"submittedAt\":null...<truncated:19>"
-    },
-    {
-      "id": "p4.malformed.auth-verify-invalid-json",
-      "method": "POST",
-      "endpoint": "/api/auth/verify",
-      "actualStatus": 400,
-      "assertion": "Status/leakage/assertion failure (No extra validation required)",
-      "responseSample": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Bad Request</pre>\n</body>\n</html>\n"
-    }
-  ],
+  "deviations": [],
   "criticalLeakFindings": 0,
   "phaseTotals": {
     "phase2": {
       "total": 12,
-      "passed": 9,
-      "failed": 3,
+      "passed": 12,
+      "failed": 0,
       "skipped": 0
     },
     "phase3": {
@@ -80,8 +45,8 @@
     },
     "phase4": {
       "total": 8,
-      "passed": 7,
-      "failed": 1,
+      "passed": 8,
+      "failed": 0,
       "criticalLeaks": 0
     }
   }

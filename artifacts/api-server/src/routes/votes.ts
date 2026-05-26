@@ -9,6 +9,7 @@ import {
 } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
+import { isNonNegativeInteger } from "../lib/validation.js";
 
 const router = Router();
 
@@ -60,6 +61,10 @@ router.post("/escrows/:id/votes", requireAuth, async (req, res) => {
     const body = SubmitVoteBody.safeParse(req.body);
     if (!params.success || !body.success) {
       res.status(400).json({ error: "Invalid request" });
+      return;
+    }
+    if (!isNonNegativeInteger(body.data.outcomeIndex)) {
+      res.status(400).json({ error: "Invalid outcomeIndex" });
       return;
     }
 

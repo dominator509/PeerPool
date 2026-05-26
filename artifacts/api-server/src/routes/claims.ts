@@ -12,6 +12,7 @@ import {
 import { randomUUID } from "crypto";
 import { requireAuth } from "../lib/auth.js";
 import { isDependencyFailure } from "../lib/errors.js";
+import { isUnsignedIntegerString } from "../lib/validation.js";
 
 const router = Router();
 
@@ -45,6 +46,10 @@ router.post("/escrows/:id/claims", requireAuth, async (req, res) => {
     const body = CreateClaimBody.safeParse(req.body);
     if (!params.success || !body.success) {
       res.status(400).json({ error: "Invalid request" });
+      return;
+    }
+    if (!isUnsignedIntegerString(body.data.amount)) {
+      res.status(400).json({ error: "Invalid amount format" });
       return;
     }
 

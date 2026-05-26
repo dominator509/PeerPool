@@ -82,6 +82,19 @@ app.use(
 
 app.use(express.json({ limit: "512kb" }));
 app.use(express.urlencoded({ extended: true, limit: "512kb" }));
+app.use((err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+  // Normalize body-parser syntax and payload size errors into the API's JSON envelope.
+  const parseError = err as { type?: string; status?: number };
+  if (parseError?.type === "entity.parse.failed") {
+    res.status(400).json({ error: "Invalid JSON body" });
+    return;
+  }
+  if (parseError?.status === 413) {
+    res.status(413).json({ error: "Request payload too large" });
+    return;
+  }
+  next(err);
+});
 
 app.use("/api", globalLimiter);
 app.use("/api/auth", authLimiter);

@@ -1,20 +1,20 @@
 # BLACK BOX CONTRACT REPORT
 
-Generated: 2026-05-26T00:10:53.020Z
+Generated: 2026-05-26T00:15:27.983Z
 
 ## Coverage Summary
 
 - Documented OpenAPI operations: 37
 - Attempted operations (observed via black-box suite): 19
-- Successfully tested operations: 18
+- Successfully tested operations: 19
 - Attempted interface coverage: 51.35%
-- Successful interface coverage: 48.65%
+- Successful interface coverage: 51.35%
 
 ## Phase Execution Totals
 
-- Phase 2 (Equivalence/Boundary): 9/12 passed, 3 failed
+- Phase 2 (Equivalence/Boundary): 12/12 passed, 0 failed
 - Phase 3 (State Transition): 14/14 passed, 0 failed
-- Phase 4 (Negative/Leakage): 7/8 passed, 1 failed
+- Phase 4 (Negative/Leakage): 8/8 passed, 0 failed
 
 ## Unhandled External Exceptions
 
@@ -27,10 +27,7 @@ Generated: 2026-05-26T00:10:53.020Z
 
 ## Deviations From Expected External Contract
 
-- p2.escrow.invalid-negative-total | POST /api/escrows | status=201 | Error payload missing
-- p2.vote.invalid-negative-outcome | POST /api/escrows/{id}/votes | status=201 | Error payload missing
-- p2.claim.invalid-negative-amount | POST /api/escrows/{id}/claims | status=201 | Error payload missing
-- p4.malformed.auth-verify-invalid-json | POST /api/auth/verify | status=400 | Status/leakage/assertion failure (No extra validation required)
+- None.
 
 ## Untested Documented Operations
 
@@ -55,4 +52,4 @@ Generated: 2026-05-26T00:10:53.020Z
 
 ## Attempted But Not Successfully Verified Operations
 
-- POST /api/auth/verify
+- None.
