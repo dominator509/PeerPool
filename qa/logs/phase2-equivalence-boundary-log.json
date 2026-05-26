@@ -1,0 +1,184 @@
+{
+  "phase": 2,
+  "generatedAt": "2026-05-25T12:18:49.391Z",
+  "durationMs": 262,
+  "totals": {
+    "total": 12,
+    "passed": 9,
+    "failed": 3,
+    "skipped": 0
+  },
+  "results": [
+    {
+      "id": "p2.auth.nonce.invalid-address",
+      "partition": "invalid",
+      "method": "GET",
+      "endpoint": "/api/auth/nonce?address=not-an-address",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 2,
+      "notes": "Invalid address rejected",
+      "responseSample": "{\"error\":\"Valid EVM address required\"}"
+    },
+    {
+      "id": "p2.manifest.valid-create",
+      "partition": "valid",
+      "method": "POST",
+      "endpoint": "/api/manifests",
+      "expectedStatuses": [
+        201
+      ],
+      "actualStatus": 201,
+      "outcome": "pass",
+      "durationMs": 41,
+      "notes": "Manifest created",
+      "responseSample": "{\"id\":\"edd6c6f6-b788-4ae5-8acb-0b06cb8e9c07\",\"title\":\"Blackbox Manifest 1779711529242\",\"description\":\"Phase 2 valid manifest payload\",\"conditions\":[\"Milestone delivered and approved\"],\"outcomes\":[{\"index\":0,\"label\":\"Release Funds\",\"description\":\"All conditions met\",\"distributionBps\":10000}],\"created...<truncated:120>"
+    },
+    {
+      "id": "p2.manifest.invalid-missing-required",
+      "partition": "invalid",
+      "method": "POST",
+      "endpoint": "/api/manifests",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 3,
+      "notes": "Missing required field rejected",
+      "responseSample": "{\"error\":\"Invalid body\"}"
+    },
+    {
+      "id": "p2.manifest.boundary-long-title",
+      "partition": "boundary",
+      "method": "POST",
+      "endpoint": "/api/manifests",
+      "expectedStatuses": [
+        201,
+        400,
+        413
+      ],
+      "actualStatus": 201,
+      "outcome": "pass",
+      "durationMs": 17,
+      "notes": "Boundary handled without server crash",
+      "responseSample": "{\"id\":\"8c5ae2c0-0008-4df9-9f14-85e676311965\",\"title\":\"TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT...<truncated:8281>"
+    },
+    {
+      "id": "p2.escrow.valid-create",
+      "partition": "valid",
+      "method": "POST",
+      "endpoint": "/api/escrows",
+      "expectedStatuses": [
+        201
+      ],
+      "actualStatus": 201,
+      "outcome": "pass",
+      "durationMs": 13,
+      "notes": "Escrow created",
+      "responseSample": "{\"id\":\"413fd846-fa2b-41c7-85ab-9d23f9314cfc\",\"title\":\"Blackbox Escrow 1779711529242\",\"description\":\"Phase 2 valid escrow payload\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"100\",\"fundedAmount\":\"0\",\"creatorAddress\":\"...<truncated:202>"
+    },
+    {
+      "id": "p2.escrow.invalid-negative-total",
+      "partition": "invalid",
+      "method": "POST",
+      "endpoint": "/api/escrows",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 201,
+      "outcome": "fail",
+      "durationMs": 9,
+      "notes": "Error payload missing",
+      "responseSample": "{\"id\":\"9499f3a7-082c-4a96-b590-020d1955e423\",\"title\":\"Invalid Negative Amount Escrow\",\"description\":\"Should reject negative totals\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"-1\",\"fundedAmount\":\"0\",\"creatorAddress\":...<truncated:203>"
+    },
+    {
+      "id": "p2.escrow.invalid-missing-manifest",
+      "partition": "invalid",
+      "method": "POST",
+      "endpoint": "/api/escrows",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 3,
+      "notes": "Missing manifest rejected",
+      "responseSample": "{\"error\":\"Invalid body\"}"
+    },
+    {
+      "id": "p2.escrow.boundary-list-limit-valid",
+      "partition": "boundary",
+      "method": "GET",
+      "endpoint": "/api/escrows?limit=1&offset=0",
+      "expectedStatuses": [
+        200
+      ],
+      "actualStatus": 200,
+      "outcome": "pass",
+      "durationMs": 20,
+      "notes": "List limit respected",
+      "responseSample": "{\"items\":[{\"id\":\"9499f3a7-082c-4a96-b590-020d1955e423\",\"title\":\"Invalid Negative Amount Escrow\",\"description\":\"Should reject negative totals\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"-1\",\"fundedAmount\":\"0\",\"creato...<truncated:225>"
+    },
+    {
+      "id": "p2.escrow.boundary-list-limit-negative",
+      "partition": "boundary",
+      "method": "GET",
+      "endpoint": "/api/escrows?limit=-1&offset=0",
+      "expectedStatuses": [
+        400,
+        200
+      ],
+      "actualStatus": 200,
+      "outcome": "pass",
+      "durationMs": 5,
+      "notes": "Negative limit accepted/sanitized but service stayed stable",
+      "responseSample": "{\"items\":[{\"id\":\"9499f3a7-082c-4a96-b590-020d1955e423\",\"title\":\"Invalid Negative Amount Escrow\",\"description\":\"Should reject negative totals\",\"state\":\"pending\",\"chain\":\"ethereum\",\"contractAddress\":null,\"token\":\"0x0000000000000000000000000000000000000000\",\"totalAmount\":\"-1\",\"fundedAmount\":\"0\",\"creato...<truncated:4214>"
+    },
+    {
+      "id": "p2.participant.invalid-role",
+      "partition": "invalid",
+      "method": "POST",
+      "endpoint": "/api/escrows/{id}/participants",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 400,
+      "outcome": "pass",
+      "durationMs": 2,
+      "notes": "Invalid role rejected",
+      "responseSample": "{\"error\":\"Invalid request\"}"
+    },
+    {
+      "id": "p2.vote.invalid-negative-outcome",
+      "partition": "invalid",
+      "method": "POST",
+      "endpoint": "/api/escrows/{id}/votes",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 201,
+      "outcome": "fail",
+      "durationMs": 22,
+      "notes": "Error payload missing",
+      "responseSample": "{\"id\":\"612922c7-2ed0-4cc2-8859-436b382109f2\",\"escrowId\":\"413fd846-fa2b-41c7-85ab-9d23f9314cfc\",\"voterAddress\":\"0x2222222222222222222222222222222222222222\",\"outcomeIndex\":-1,\"outcomeLabel\":null,\"weight\":\"1\",\"signature\":null,\"votedAt\":\"2026-05-25T12:18:49.138Z\"}"
+    },
+    {
+      "id": "p2.claim.invalid-negative-amount",
+      "partition": "invalid",
+      "method": "POST",
+      "endpoint": "/api/escrows/{id}/claims",
+      "expectedStatuses": [
+        400
+      ],
+      "actualStatus": 201,
+      "outcome": "fail",
+      "durationMs": 10,
+      "notes": "Error payload missing",
+      "responseSample": "{\"id\":\"5b29e5c4-17f5-492d-9b96-f3c1cb2abe1a\",\"escrowId\":\"413fd846-fa2b-41c7-85ab-9d23f9314cfc\",\"claimantAddress\":\"0x3333333333333333333333333333333333333333\",\"amount\":\"-5\",\"merkleRoot\":null,\"merkleProof\":null,\"leafHash\":null,\"state\":\"pending\",\"createdAt\":\"2026-05-25T12:18:49.156Z\",\"submittedAt\":null...<truncated:19>"
+    }
+  ]
+}

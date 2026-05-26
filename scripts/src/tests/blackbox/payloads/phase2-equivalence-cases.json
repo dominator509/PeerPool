@@ -1,0 +1,68 @@
+{
+  "manifest": {
+    "valid": {
+      "title": "Blackbox Manifest",
+      "description": "Phase 2 valid manifest payload",
+      "conditions": ["Milestone delivered and approved"],
+      "outcomes": [
+        {
+          "index": 0,
+          "label": "Release Funds",
+          "description": "All conditions met",
+          "distributionBps": 10000
+        }
+      ]
+    },
+    "missingRequired": {
+      "title": "Invalid Manifest Missing Outcomes",
+      "conditions": ["Missing required outcomes array"]
+    },
+    "longTitleLength": 8192
+  },
+  "escrow": {
+    "valid": {
+      "title": "Blackbox Escrow",
+      "description": "Phase 2 valid escrow payload",
+      "chain": "ethereum",
+      "token": "0x0000000000000000000000000000000000000000",
+      "totalAmount": "100"
+    },
+    "negativeAmount": {
+      "title": "Invalid Negative Amount Escrow",
+      "description": "Should reject negative totals",
+      "chain": "ethereum",
+      "token": "0x0000000000000000000000000000000000000000",
+      "totalAmount": "-1"
+    },
+    "missingManifestId": {
+      "title": "Invalid Missing Manifest Escrow",
+      "description": "Should reject missing manifest reference",
+      "chain": "ethereum",
+      "token": "0x0000000000000000000000000000000000000000",
+      "totalAmount": "10"
+    }
+  },
+  "participant": {
+    "invalidRole": {
+      "address": "0x1111111111111111111111111111111111111111",
+      "role": "invalid_role"
+    }
+  },
+  "vote": {
+    "negativeOutcomeIndex": {
+      "voterAddress": "0x2222222222222222222222222222222222222222",
+      "outcomeIndex": -1
+    }
+  },
+  "claim": {
+    "negativeAmount": {
+      "claimantAddress": "0x3333333333333333333333333333333333333333",
+      "amount": "-5"
+    }
+  },
+  "query": {
+    "limitValid": 1,
+    "limitNegative": -1
+  }
+}
+
