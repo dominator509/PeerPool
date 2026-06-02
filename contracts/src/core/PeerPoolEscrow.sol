@@ -124,6 +124,7 @@ contract PeerPoolEscrow is FundingPool, IEscrow {
         external
         payable
         override
+        nonReentrant
         inState(escrowId, EscrowState.Pending)
     {
         require(
@@ -166,7 +167,7 @@ contract PeerPoolEscrow is FundingPool, IEscrow {
     }
 
     /// @inheritdoc IEscrow
-    function triggerDeadline(bytes32 escrowId) external override {
+    function triggerDeadline(bytes32 escrowId) external override nonReentrant {
         EscrowData storage e = _escrows[escrowId];
         require(block.timestamp > e.config.deadline, "PeerPoolEscrow: deadline not reached");
         require(
@@ -203,7 +204,7 @@ contract PeerPoolEscrow is FundingPool, IEscrow {
         bytes32 escrowId,
         address[] calldata recipients,
         uint256[] calldata amounts
-    ) external onlySettlementEngine {
+    ) external onlySettlementEngine nonReentrant {
         require(
             _escrows[escrowId].state == EscrowState.Active ||
             _escrows[escrowId].state == EscrowState.Disputed,
