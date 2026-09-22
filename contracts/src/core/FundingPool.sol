@@ -63,7 +63,9 @@ abstract contract FundingPool is ReentrancyGuard {
         emit PoolCreated(poolId, token, targetAmount);
     }
 
-    function _deposit(bytes32 poolId, address depositor, uint256 amount) internal nonReentrant {
+    /// @notice Deposit funds into a pool. Guarded by the caller's `nonReentrant`
+    ///         (ReentrancyGuard must only wrap external entry points).
+    function _deposit(bytes32 poolId, address depositor, uint256 amount) internal {
         PoolState storage pool = _pools[poolId];
         require(!pool.locked, "FundingPool: pool locked");
         require(!pool.released, "FundingPool: pool released");
@@ -88,7 +90,8 @@ abstract contract FundingPool is ReentrancyGuard {
         }
     }
 
-    function _release(bytes32 poolId, address recipient, uint256 amount) internal nonReentrant {
+    /// @notice Release settled funds. Guarded by the caller's `nonReentrant`.
+    function _release(bytes32 poolId, address recipient, uint256 amount) internal {
         PoolState storage pool = _pools[poolId];
         require(!pool.released, "FundingPool: already released");
         require(amount <= pool.depositedAmount, "FundingPool: insufficient funds");
@@ -96,7 +99,8 @@ abstract contract FundingPool is ReentrancyGuard {
         _transfer(pool.token, recipient, amount);
     }
 
-    function _refundAll(bytes32 poolId, address[] memory depositors) internal nonReentrant {
+    /// @notice Refund every contributor. Guarded by the caller's `nonReentrant`.
+    function _refundAll(bytes32 poolId, address[] memory depositors) internal {
         PoolState storage pool = _pools[poolId];
         require(!pool.released, "FundingPool: already released");
         pool.released = true;
